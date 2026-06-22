@@ -56,7 +56,7 @@ D492 Data+ 002
 
 ## How to use it
 
-1. Install [Anki](https://apps.ankiweb.net/) (no charge, desktop or Android mobile, but you should probably drop a donation to the folks that create and maintain Anki).
+1. Install [Anki](https://apps.ankiweb.net/) (there are no charges for the desktop or Android mobile apps, but you should probably drop a donation to the folks that create and maintain Anki).
 2. Download `D492_Data_Plus_002.apkg` from this repo.
 3. In Anki: **File → Import** and select the file.
 4. The deck and all sub-decks will appear under **D492 Data+ 002**. Study the parent deck to cycle through everything, or click into a specific module or the quiz sub-decks for focused review.
