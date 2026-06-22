@@ -49,9 +49,9 @@ D492 Data+ 002
 ├── Module 17 — Summarizing the Importance of Data Governance
 ├── Module 18 — Explaining Data Management Concepts
 ├── Module 19 — Troubleshooting Issues and Measuring Performance
-├── Practice Quizzes and Tests
-├── JOINs vs. Set Operators (bonus)
-└── Normal Forms (CompTIA vs. WGU's D426) (bonus)
+├── JOINs vs. Set Operators
+├── Normal Forms (CompTIA vs. WGU's D426)
+└── Practice Questions 
 ```
 
 ## How to use it
