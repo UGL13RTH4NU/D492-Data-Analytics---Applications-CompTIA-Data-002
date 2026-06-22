@@ -5,7 +5,7 @@ Study materials I built in collaboration with Claude Opus 4.7 while working thro
 There were **3 primary** source materials used for the Claude collaboration:
   1. CertMaster Perform v2 by CompTIA - can be obtained by purchasing CompTIA's CertMaster Perform learning material
   2. Sybex's Data+ 002 book by Mike Chapple - CompTIA Data+ Study Guide: Exam DA0-002 - can be purchased on Amazon
-  3. D492 Study Guide V24 (WGU - auhtor(s) unknown) - as far as I know, this is the only material not copyrighted, so I will add it to the repo. For the 2 items, I suggest purchasing them from a reputable source.
+  3. D492 Study Guide V24 (WGU - auhtor(s) unknown) - as far as I know, this is the only material not copyrighted, so I will add it to the repo. For the       other 2 items, I suggest purchasing them from a reputable source.
 
 As of initial post (June 22, 2026) - Right now this repo contains a single Anki deck. I'll update the deck a few more times as I progress through the rest of the material.
 
