@@ -1,6 +1,11 @@
 # D492 Data Analytics – Applications (CompTIA Data+ DA0-002)
 
-Study materials I built in collaboration with Claude Opus 4.7 while working through WGU's **D492 Data Analytics – Applications** course, which prepares students for the **CompTIA Data+ v2 (DA0-002)** certification exam.
+Study materials I built in collaboration with Claude Opus 4.7 while working through WGU's **D492 Data Analytics – Applications** course, which prepares students for the **CompTIA Data+ v2 (DA0-002)** certification exam. 
+
+There were **3 primary** source materials used for the Claude collaboration:
+  1. CertMaster Perform v2 by CompTIA - can be obtained by purchasing CompTIA's CertMaster Perform learning material
+  2. Sybex's Data+ 002 book by Mike Chapple - CompTIA Data+ Study Guide: Exam DA0-002 - can be purchased on Amazon
+  3. D492 Study Guide V24 (WGU - auhtor(s) unknown) - as far as I know, this is the only material not copyrighted, so I will add it to the repo. For the 2 items, I suggest purchasing them from a reputable source.
 
 As of initial post (June 22, 2026) - Right now this repo contains a single Anki deck. I'll update the deck a few more times as I progress through the rest of the material.
 
@@ -70,9 +75,9 @@ CompTIA Data+ DA0-002 is the v2 of the Data+ exam:
 
 ## Caveats
 
-- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it.
-- Cards reflect my best understanding of the CertMaster Perform content as of when I wrote them. If you find an error or a card you disagree with, open an issue — I'd genuinely like to know.
-- Do **not** use this as a substitute for working through the CertMaster content yourself. Flashcards reinforce knowledge; they don't build it from scratch.
+- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it. YOU should varify any information that was produced by Claude or myself on your own.
+- Cards reflect my best understanding of the CertMaster Perform content as of when I wrote them. If you find an error or a card you disagree with, please let me know.
+- Do **not** use this as a substitute for working through the CertMaster content yourself. Flashcards reinforce knowledge; they don't build it from scratch. The CertMaster Perform material is very good and I recommend using it in conjunction with the Anki deck.
 - Don't memorize answers — the Anki deck and the real exam shuffle are not the same. DO read the explanations when you get something wrong. They are detailed and meant to help with understanding the material.
 
 ## License
