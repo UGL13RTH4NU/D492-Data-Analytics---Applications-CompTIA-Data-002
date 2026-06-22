@@ -50,7 +50,6 @@ D492 Data+ 002
 ├── Module 18 — Explaining Data Management Concepts
 ├── Module 19 — Troubleshooting Issues and Measuring Performance
 ├── Practice Quizzes and Tests
-│   └── CertMaster Perform
 ├── JOINs vs. Set Operators (bonus)
 └── Normal Forms (CompTIA vs. WGU's D426) (bonus)
 ```
