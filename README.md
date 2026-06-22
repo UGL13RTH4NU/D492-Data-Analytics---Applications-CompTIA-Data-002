@@ -74,7 +74,7 @@ CompTIA Data+ DA0-002 is the v2 of the Data+ exam:
 
 ## Caveats
 
-- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it. YOU should varify any information that was produced by Claude or myself on your own.
+- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it. YOU should varify (see what I mean) any information that was produced by Claude or myself on your own.
 - Cards reflect my best understanding of the CertMaster Perform content as of when I wrote them. If you find an error or a card you disagree with, please let me know.
 - Do **not** use this as a substitute for working through the CertMaster content yourself. Flashcards reinforce knowledge; they don't build it from scratch. The CertMaster Perform material is very good and I recommend using it in conjunction with the Anki deck.
 - Don't memorize answers — the Anki deck and the real exam shuffle are not the same. DO read the explanations when you get something wrong. They are detailed and meant to help with understanding the material.
