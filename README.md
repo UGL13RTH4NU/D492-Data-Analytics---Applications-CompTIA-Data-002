@@ -13,7 +13,7 @@ As of initial post (June 22, 2026) - Right now this repo contains a single Anki 
 
 ## What's here
 
-- **`D492_Data_Plus_002.apkg`** — an Anki deck covering the full D492 / Data+ course (1,500+ cards). See breakdown below.
+- **`D492 Data+ 002 - Scotts Fresh Deck.apkg`** — an Anki deck covering the full D492 / Data+ course (1,500+ cards). See breakdown below.
 
 ## About the deck
 
