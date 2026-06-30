@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D492 Module 12 — Statistical Methods Trainer</title>
+<style>
+:root{
+  --accent:#1F6FB2;
+  --accent2:#2E8B57;
+  --warn:#C0392B;
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --border:#dbe3ee;
+  --text:#0b1b2b;
+  --muted:#4b5e73;
+  --chip:#eef3f8;
+  --dash:#cfd9e3;
+  --good:#155724;
+  --goodbg:#d4edda;
+  --goodbd:#b7dfc5;
+  --bad:#7a1d1d;
+  --badbg:#f8d7da;
+  --badbd:#f1b0b7;
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
+}
+.dark{
+  --bg:#0c1015;
+  --panel:#121a23;
+  --border:#223042;
+  --text:#e8edf3;
+  --muted:#9ab0c6;
+  --chip:#172233;
+  --dash:#2a374b;
+  --good:#69db7c;
+  --goodbg:#0f1a12;
+  --goodbd:#1a3622;
+  --bad:#ff8787;
+  --badbg:#1a0f10;
+  --badbd:#3a1d20;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.45}
+header{display:flex;gap:12px;align-items:center;padding:14px 16px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.35rem);color:var(--accent)}
+h1 .sub{color:var(--muted);font-weight:500;font-size:.85em;margin-left:8px}
+main{max-width:1280px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:1024px){main{grid-template-columns:1fr 380px}}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.card h2{margin:0;padding:12px 14px;border-bottom:1px solid var(--border);font-size:1.02rem;color:var(--accent)}
+.card .content{padding:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+select,button,input{background:var(--panel);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:10px;font-size:.95rem;font-family:inherit}
+button{cursor:pointer;font-weight:600;transition:transform .05s, background .15s}
+button:hover{background:var(--chip)}
+button:active{transform:translateY(1px)}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.primary:hover{filter:brightness(1.05);background:var(--accent)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:var(--chip);border:1px solid var(--border);font-size:.86rem}
+.muted{color:var(--muted)}
+.hint{background:var(--chip);border-left:3px solid var(--accent);padding:11px 12px;border-radius:8px;margin-top:8px;font-size:.92rem}
+.hint b{color:var(--accent)}
+.good{color:var(--good);background:var(--goodbg);padding:9px 11px;border-radius:10px;border:1px solid var(--goodbd);font-weight:600}
+.bad{color:var(--bad);background:var(--badbg);padding:9px 11px;border-radius:10px;border:1px solid var(--badbd);font-weight:600}
+.kbd{border:1px solid var(--border);background:var(--chip);border-radius:6px;padding:1px 6px;font-weight:700;font-size:.85em}
+.grid{display:grid;gap:10px}
+
+/* drag/drop */
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;padding:10px;background:var(--chip);border-radius:10px;min-height:60px;border:1px dashed var(--dash)}
+.bank.empty{opacity:.6}
+.scenarios-stack{display:grid;gap:10px;margin-top:14px}
+.scenario{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 200px;gap:12px;align-items:start}
+@media(max-width:680px){.scenario{grid-template-columns:1fr}}
+.scenario .text{font-size:.94rem}
+.scenario .text .tagsline{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.scenario .text .ctag{font-size:.72rem;background:var(--chip);border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:var(--muted)}
+.drop{min-height:54px;border:2px dashed var(--dash);border-radius:10px;background:var(--bg);padding:6px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;transition:background .15s, border-color .15s}
+.drop.over{border-color:var(--accent);background:var(--chip)}
+.drop .placeholder{color:var(--muted);font-size:.82rem;font-style:italic}
+.chip{padding:7px 11px;border:1px solid var(--border);background:var(--panel);border-radius:8px;font-size:.88rem;font-weight:600;cursor:grab;user-select:none;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+.chip:active{cursor:grabbing}
+.chip.placed{cursor:pointer}
+.chip.placed::after{content:"×";color:var(--muted);font-weight:700;margin-left:2px}
+.chip.correct{border-color:var(--good);background:var(--goodbg);color:var(--good)}
+.chip.incorrect{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+
+/* test color coding */
+.color-ttest{border-left:4px solid #C0392B}
+.color-chi{border-left:4px solid #8E44AD}
+.color-regression{border-left:4px solid #1F6FB2}
+.color-correlation{border-left:4px solid #2E8B57}
+.color-sampling{border-left:4px solid #D68910}
+.color-error{border-left:4px solid #884EA0}
+
+.feedback{margin-top:12px;display:grid;gap:8px}
+.fb-card{padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);font-size:.9rem}
+.fb-card.right{border-left:4px solid var(--good)}
+.fb-card.wrong{border-left:4px solid var(--bad)}
+.fb-card .why{margin-top:6px;color:var(--muted)}
+
+.ref dl{margin:0;display:grid;gap:10px}
+.ref dt{font-weight:700;color:var(--accent);margin-bottom:2px}
+.ref dd{margin:0;font-size:.88rem}
+.ref dd .cues{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.ref dd .cues span{background:var(--chip);border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:.75rem;color:var(--muted)}
+
+.score-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--chip);border-radius:10px;border:1px solid var(--border);font-size:.9rem}
+.score-bar b{color:var(--accent)}
+
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:12px;padding-bottom:0}
+.tab{padding:9px 13px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-weight:600;cursor:pointer;font-size:.92rem;border-radius:0}
+.tab:hover{background:var(--chip)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+details{margin-top:8px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.9rem;padding:4px 0}
+details summary:hover{text-decoration:underline}
+
+.mcq-options{display:grid;gap:8px;margin-top:10px}
+.mcq-opt{text-align:left;padding:11px 13px;border:1px solid var(--border);background:var(--panel);border-radius:10px;cursor:pointer;font-size:.93rem;font-weight:500}
+.mcq-opt:hover{background:var(--chip)}
+.mcq-opt.correct{border-color:var(--good);background:var(--goodbg);color:var(--good);font-weight:700}
+.mcq-opt.incorrect{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+.mcq-opt.revealed{opacity:.65;cursor:default}
+
+.cue-card{padding:18px 14px;background:var(--chip);border:1px solid var(--border);border-radius:12px;text-align:center;margin-bottom:12px}
+.cue-card .label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.cue-card .phrase{font-size:1.1rem;font-weight:700;color:var(--accent)}
+
+small{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>D492 Module 12 Trainer <span class="sub">Statistical Methods · Identify & Categorize</span></h1>
+  <div style="flex:1"></div>
+  <label class="pill"><input type="checkbox" id="darkToggle"> Dark mode</label>
+</header>
+
+<main>
+  <!-- LEFT: practice area -->
+  <section class="card">
+    <h2>Practice</h2>
+    <div class="content">
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-mode="test_match">Scenarios → Test</button>
+        <button class="tab" data-mode="sampling">Sampling → Method</button>
+        <button class="tab" data-mode="cues">Cue Words</button>
+        <button class="tab" data-mode="errors">Errors & Hypotheses</button>
+        <button class="tab" data-mode="concepts">P-values & CI</button>
+        <button class="tab" data-mode="mixed">Mixed Drill</button>
+      </div>
+
+      <div class="row">
+        <button id="newSet" class="primary">New Set</button>
+        <button id="checkBtn">Check Answers</button>
+        <button id="resetBtn">Reset</button>
+        <div style="flex:1"></div>
+        <div class="score-bar"><span>Session:</span> <b id="sessScore">0 / 0</b></div>
+      </div>
+
+      <div id="work"></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: quick reference -->
+  <aside class="card ref">
+    <h2>Quick Reference — Distinguishing Characteristics</h2>
+    <div class="content">
+
+      <details open>
+        <summary>📊 The Four Statistical Tests</summary>
+        <dl style="margin-top:8px">
+          <dt style="color:#C0392B">T-Test <small>(parametric)</small></dt>
+          <dd>Compares <b>means of two groups</b> when the dependent variable is normally distributed. One-sample compares to a number; two-sample compares two groups.
+            <div class="cues">
+              <span>"compare means"</span><span>"two groups"</span><span>"placebo vs drug"</span><span>"normally distributed"</span><span>"significant difference"</span>
+            </div>
+          </dd>
+
+          <dt style="color:#8E44AD">Chi-Square <small>(non-parametric · categorical)</small></dt>
+          <dd>Tests <b>categorical variables</b> by comparing expected vs actual counts. <b>Test of independence</b> = relationship between variables. <b>Goodness of fit</b> = distribution against expectation.
+            <div class="cues">
+              <span>"categorical"</span><span>"pass/fail"</span><span>"survey responses"</span><span>"race/gender/education"</span><span>"expected vs actual"</span><span>"goodness of fit"</span>
+            </div>
+          </dd>
+
+          <dt style="color:#1F6FB2">Simple Linear Regression <small>(parametric)</small></dt>
+          <dd><b>One independent (predictor) and one dependent variable</b>. Produces a best-fit line. Estimates / predicts a value.
+            <div class="cues">
+              <span>"predict"</span><span>"one predictor"</span><span>"best-fit line"</span><span>"scatter plot trend line"</span><span>"strongest predictor"</span>
+            </div>
+          </dd>
+
+          <dt style="color:#2E8B57">Correlation <small>(Pearson's r · parametric)</small></dt>
+          <dd>Measures the <b>strength of relationship</b> between two equal variables. r is between −1 and 1. <b>Does NOT prove causation.</b>
+            <div class="cues">
+              <span>"strength of relationship"</span><span>"r value"</span><span>"one changes, the other changes"</span><span>"not causation"</span>
+            </div>
+          </dd>
+        </dl>
+        <div class="hint" style="margin-top:10px"><b>The key fork:</b> Continuous + comparing means → <b style="color:#C0392B">T-test</b>. Categorical → <b style="color:#8E44AD">Chi-square</b>. Predict a value from one variable → <b style="color:#1F6FB2">Regression</b>. Just measure the link without predicting → <b style="color:#2E8B57">Correlation</b>.</div>
+      </details>
+
+      <details>
+        <summary>🎯 Sampling Methods (7)</summary>
+        <dl style="margin-top:8px">
+          <dt>Simple Random</dt><dd>Each member has an <b>equal chance</b>; selections are <b>independent</b>.</dd>
+          <dt>Stratified</dt><dd>Population divided into <b>homogeneous subgroups</b>; random samples from each. Used for <b>imbalanced datasets</b> to ensure all groups represented.</dd>
+          <dt>Systematic</dt><dd><b>Every nth element</b> after a random start. Less bias than simple random; still easy.</dd>
+          <dt>Cluster</dt><dd>Population divided into clusters; randomly pick clusters; include <b>ALL individuals</b> in chosen clusters.</dd>
+          <dt>Multi-stage</dt><dd><b>Combines</b> multiple sampling methods in stages.</dd>
+          <dt>Convenience</dt><dd>Whoever is <b>easiest/closest</b>. Quick but <b>may not represent</b> the population.</dd>
+          <dt>Snowball</dt><dd>Start with known members; they <b>identify/refer</b> additional members. Used for hard-to-reach populations.</dd>
+        </dl>
+      </details>
+
+      <details>
+        <summary>⚠️ Hypothesis & Errors</summary>
+        <dl style="margin-top:8px">
+          <dt>Null hypothesis (H₀)</dt><dd><b>No relationship</b> exists between variables.</dd>
+          <dt>Alternative hypothesis (H₁)</dt><dd>A <b>relationship does exist</b> between variables.</dd>
+          <dt style="color:#C0392B">Type I error — False POSITIVE</dt><dd><b>Reject a TRUE null.</b> You say there's an effect when there isn't.<br><i>Example: a healthy person is told they have cancer.</i></dd>
+          <dt style="color:#C0392B">Type II error — False NEGATIVE</dt><dd><b>Accept a FALSE null.</b> You miss a real effect.<br><i>Example: a sick person is told they're healthy.</i></dd>
+        </dl>
+        <div class="hint">Memory hook: <b>Type 1 = 1 thing wrong</b> (false alarm). <b>Type 2 = missed it</b> (silent failure).</div>
+      </details>
+
+      <details>
+        <summary>📈 P-values, Alpha, Confidence Intervals</summary>
+        <dl style="margin-top:8px">
+          <dt>p-value</dt><dd>Probability the result happened by chance. <b>p &lt; 0.05 = statistically significant.</b> Low p = repeatable. High p = likely chance.</dd>
+          <dt>Alpha (α)</dt><dd>The significance threshold. <b>α = 0.05 corresponds to 95% confidence.</b> α = 0.01 → 99%, α = 0.10 → 90%.</dd>
+          <dt>Confidence Interval</dt><dd>Range around the mean where the true population value is expected to fall. Bounds = mean ± CONFIDENCE result.</dd>
+          <dt>r value (Pearson's)</dt><dd>−1 to 1. <b>~1 strong, 0.4–0.7 moderate, ~0 none</b>. Negative = inverse.</dd>
+          <dt>R² (coefficient of determination)</dt><dd>Proportion of variability in the dependent variable explained by the independent. Multiply by 100% to read.</dd>
+        </dl>
+      </details>
+
+      <p class="muted" style="margin-top:12px;font-size:.85rem">Shortcuts: <span class="kbd">N</span> new set · <span class="kbd">Enter</span> check answers · <span class="kbd">R</span> reset.</p>
+    </div>
+  </aside>
+</main>
+
+<script>
+/* =====================================================
+   DATA — All scenarios indexed by mode
+   Each scenario: text, correct answer, distinguishing clues, explanation
+   Sources: Data+ 002 PDF Module 12, Module 11, cross-referenced w/ standard stat references
+   ===================================================== */
+
+const TESTS = {
+  ttest:       { label:"T-Test",                color:"#C0392B" },
+  chi:         { label:"Chi-Square",            color:"#8E44AD" },
+  regression:  { label:"Simple Linear Regression", color:"#1F6FB2" },
+  correlation: { label:"Correlation",           color:"#2E8B57" }
+};
+
+const TEST_SCENARIOS = [
+  // T-TEST scenarios
+  { text:"A pharmaceutical company runs a drug trial where one group receives the actual medication and another receives a placebo. The team wants to know whether the average recovery time differs significantly between the two groups.",
+    answer:"ttest", clues:["two groups","average / mean","drug vs placebo","significant difference"],
+    why:"Two groups + comparing means of a normally distributed dependent variable (recovery days). That's the textbook two-sample t-test scenario." },
+
+  { text:"A subscription service wants to know if the average monthly spend of this year's subscribers is higher than last year's annual average of $42.50.",
+    answer:"ttest", clues:["mean to a number","one sample"],
+    why:"Comparing a sample mean against a single fixed number is the classic one-sample t-test from the textbook." },
+
+  { text:"Classroom 105 received five extra study hours; Classroom 106 did not. An analyst wants to determine whether the extra hours produced a statistically significant difference in test score means.",
+    answer:"ttest", clues:["two groups","means","intervention"],
+    why:"Two independent groups with a continuous, normally-distributed dependent variable (test scores). Textbook two-sample t-test." },
+
+  { text:"A factory measures average widget weight on Line A versus Line B. Weights are normally distributed. Management wants to know if the lines produce significantly different mean weights.",
+    answer:"ttest", clues:["two groups","mean weight","normally distributed"],
+    why:"Compare means between two groups with normally-distributed continuous data → t-test." },
+
+  // CHI-SQUARE scenarios
+  { text:"An analyst surveys 100 students. Each is asked to rate themselves as Very Prepared, Somewhat Prepared, or Not Prepared. The analyst wants to know whether preparedness category is related to whether they passed or failed the exam.",
+    answer:"chi", clues:["categorical","pass/fail","relationship between categories"],
+    why:"Both variables are categorical (preparedness level and pass/fail). Chi-square test of independence — verbatim from the PDF's Table 20 example." },
+
+  { text:"A pollster wants to know whether voter party affiliation (Democrat, Republican, Independent) is related to support for a ballot measure (Support, Oppose, Undecided).",
+    answer:"chi", clues:["categorical","relationship","no means involved"],
+    why:"Two categorical variables, looking for a relationship between them → chi-square test of independence." },
+
+  { text:"A researcher hypothesized that 15% of students would fail an exam and 85% would pass. After the exam, she wants to compare the actual pass/fail counts to this expected distribution.",
+    answer:"chi", clues:["expected vs actual","single variable","hypothesized distribution"],
+    why:"Comparing observed counts to a single hypothesized distribution → chi-square goodness of fit (the second chi-square variant from the PDF)." },
+
+  { text:"A marketing team surveyed customers about preferred channel (Email, SMS, App, Social). They want to know if channel preference differs by age bracket (18–29, 30–49, 50+).",
+    answer:"chi", clues:["two categorical variables","survey responses","race/age/gender style"],
+    why:"Both variables are categorical (channel, age bracket). Chi-square test of independence is built for exactly this." },
+
+  // REGRESSION scenarios
+  { text:"School administrators want to know whether days present predicts a student's eighth-grade test score, and if so, by how much. They plan to plot the data with a best-fit line.",
+    answer:"regression", clues:["one predictor","predict","best-fit line"],
+    why:"One independent variable (days present) predicting one dependent variable (test score), visualized as a trend line. Textbook simple linear regression example." },
+
+  { text:"A retailer wants to estimate how each additional $1,000 of advertising spend changes weekly sales revenue.",
+    answer:"regression", clues:["one predictor","estimate impact","predict change"],
+    why:"Quantifying the predictive impact of one independent variable on one continuous dependent variable → simple linear regression." },
+
+  { text:"A real estate analyst wants to build a model where square footage predicts home sale price, producing a line of best fit on a scatter plot.",
+    answer:"regression", clues:["one predictor","predict","scatter with line"],
+    why:"One predictor variable, one outcome variable, predictive line-fit → simple linear regression." },
+
+  // CORRELATION scenarios
+  { text:"Almost all eighth-graders watched a popular movie the weekend before their test. The analyst wants to measure the strength of the relationship between watching the movie and test scores — but is careful not to claim the movie caused the higher scores.",
+    answer:"correlation", clues:["strength of relationship","NOT causation","just association"],
+    why:"The textbook's exact warning: 'correlation doesn't mean causation.' She wants the r value, not a predictive model. Correlation, not regression." },
+
+  { text:"An analyst wants to know whether hours of social media use and reported sleep quality move together — when one changes, does the other? She does not want to predict one from the other; she only wants to know the strength of the link.",
+    answer:"correlation", clues:["move together","r value","not predicting","just strength"],
+    why:"Pure association — no predictor/predicted distinction, no causation claim. Correlation (Pearson's r) is the right tool." },
+
+  { text:"A coach computes an r value of 0.82 between practice hours and game performance, but does not claim that practice causes the better performance.",
+    answer:"correlation", clues:["r value","no causation","strength"],
+    why:"r values are produced by correlation analysis. No prediction or causal claim → correlation." }
+];
+
+const SAMPLING_METHODS = {
+  random:      { label:"Simple Random" },
+  stratified:  { label:"Stratified" },
+  systematic:  { label:"Systematic" },
+  cluster:     { label:"Cluster" },
+  multistage:  { label:"Multi-stage" },
+  convenience: { label:"Convenience" },
+  snowball:    { label:"Snowball" }
+};
+
+const SAMPLING_SCENARIOS = [
+  { text:"A small online survey selects 200 customers from a database using a function that gives every customer an equal chance of being picked, with each selection independent of the others.",
+    answer:"random", why:"'Equal chance' + 'independent of other selections' is the textbook definition of simple random sampling." },
+
+  { text:"A research firm has an imbalanced customer base where 80% are men and 20% are women. They divide the population into these subgroups and then randomly sample from within each subgroup to ensure both are represented.",
+    answer:"stratified", why:"'Imbalanced dataset' + 'divided into subgroups' + 'random sample within each' = stratified sampling, exactly as defined in the PDF." },
+
+  { text:"A manufacturing quality analyst inspects every 10th product coming off the assembly line for defects, after randomly choosing where on the line to start.",
+    answer:"systematic", why:"'Every nth element' after a 'random start' is the verbatim definition of systematic sampling." },
+
+  { text:"A school district has 20 elementary schools. The analyst randomly selects 5 of those schools and then surveys every single student in each of the 5 selected schools.",
+    answer:"cluster", why:"Population divided into clusters (schools), random selection of clusters, ALL members of selected clusters included. That's cluster sampling." },
+
+  { text:"A national health survey first selects U.S. states at random, then within each state randomly picks counties, then randomly picks households within each county to interview.",
+    answer:"multistage", why:"Multiple sampling stages combined (essentially cluster → cluster → random). The PDF defines multi-stage as combining sampling methods." },
+
+  { text:"A graduate student needs survey responses by Friday, so she walks around the campus cafeteria asking classmates and friends to fill out her form.",
+    answer:"convenience", why:"'Most easily available' members — quick but not representative. Convenience sampling." },
+
+  { text:"A researcher studying a rare disease starts with two known patients and asks each of them to introduce her to other people they know with the same condition.",
+    answer:"snowball", why:"Starting with known members and having them identify others is snowball sampling — used for hard-to-reach populations." },
+
+  { text:"An online retailer pulls 500 records from its customer table using a function that gives each row an equal probability of being picked.",
+    answer:"random", why:"Equal probability + independent selection = simple random sampling." },
+
+  { text:"A polling firm wants to ensure equal representation across rural, suburban, and urban voters. They divide the registered voters into those three groups and randomly draw an equal number from each.",
+    answer:"stratified", why:"Subgroups (rural/suburban/urban) + random sample within each + intent to ensure representation = stratified sampling." },
+
+  { text:"A factory tests every 50th item produced after randomly picking the starting item.",
+    answer:"systematic", why:"Every nth item with a random start point is the systematic sampling pattern." },
+
+  { text:"A health department randomly selects 12 hospitals from across the state and surveys every nurse on staff at those 12 hospitals.",
+    answer:"cluster", why:"Hospitals are the clusters; the entire population within selected clusters is included → cluster sampling." },
+
+  { text:"A sociologist is studying undocumented immigrants. She begins by interviewing three people she already knows from a community center, and asks each to introduce her to others.",
+    answer:"snowball", why:"Hard-to-reach population accessed via referrals from initial contacts → snowball sampling." }
+];
+
+const CUE_WORDS = [
+  // statistical tests cues
+  { phrase:"Compare the average recovery days between two groups", answer:"T-Test", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Two groups + means of normally-distributed data = t-test." },
+  { phrase:"Compare actual pass/fail counts to expected counts", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Categorical data + expected vs actual = chi-square (goodness of fit)." },
+  { phrase:"Predict test score from days present", answer:"Simple Linear Regression", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"One predictor → one outcome = simple linear regression." },
+  { phrase:"Measure strength of relationship without claiming cause", answer:"Correlation", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Strength of association, no causation = correlation." },
+  { phrase:"r = 0.82", answer:"Correlation", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"r values are produced by Pearson's correlation analysis." },
+  { phrase:"Test of independence between gender and product preference", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Two categorical variables, testing for relationship = chi-square test of independence." },
+  { phrase:"Best-fit line on a scatter plot", answer:"Simple Linear Regression", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Best-fit line = linear regression. (A scatter plot alone is just a visualization; the line + fit analysis is regression.)" },
+  { phrase:"Goodness of fit", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Goodness of fit is one of the two chi-square variants — tests whether observed data fits a hypothesized distribution." },
+  { phrase:"One-sample comparison of mean to a target number", answer:"T-Test", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"One-sample t-test compares a sample mean to a fixed value." },
+
+  // sampling cues
+  { phrase:"Every nth element after a random start", answer:"Systematic", group:"sampling", choices:["Simple Random","Stratified","Systematic","Cluster"], why:"Verbatim definition of systematic sampling." },
+  { phrase:"Each member has equal chance, independent selection", answer:"Simple Random", group:"sampling", choices:["Simple Random","Stratified","Systematic","Convenience"], why:"Equal chance + independence = simple random." },
+  { phrase:"Imbalanced dataset, ensure all subgroups represented", answer:"Stratified", group:"sampling", choices:["Simple Random","Stratified","Cluster","Multi-stage"], why:"Stratified is explicitly defined as the method for imbalanced datasets to ensure representation." },
+  { phrase:"All members of randomly selected groups", answer:"Cluster", group:"sampling", choices:["Stratified","Systematic","Cluster","Multi-stage"], why:"Cluster sampling: random clusters chosen, ALL members within them are surveyed." },
+  { phrase:"Asking initial subjects to identify others", answer:"Snowball", group:"sampling", choices:["Convenience","Snowball","Cluster","Stratified"], why:"Snowball sampling grows the sample via referrals from initial members." },
+  { phrase:"Easiest, fastest, whoever's nearby", answer:"Convenience", group:"sampling", choices:["Convenience","Snowball","Simple Random","Systematic"], why:"Convenience sampling = most easily available, fast but not representative." },
+  { phrase:"Combines multiple sampling methods at different stages", answer:"Multi-stage", group:"sampling", choices:["Stratified","Cluster","Multi-stage","Systematic"], why:"Multi-stage explicitly combines methods (e.g., stratified, then random within each stratum)." },
+
+  // parametric vs non-parametric
+  { phrase:"Used only when data is normally distributed", answer:"Parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","Descriptive statistics","Confidence intervals"], why:"Parametric tests (t-test, regression, Pearson correlation) assume normal distribution. Source: Module 11B." },
+  { phrase:"Required when data is skewed", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Regression"], why:"Non-parametric tests are used when data doesn't follow normal distribution." },
+  { phrase:"Categorical data — no normality assumption", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Simple Linear Regression"], why:"Chi-square is the textbook test for categorical data. It is non-parametric — no distribution assumption is required." }
+];
+
+const ERROR_SCENARIOS = [
+  { text:"A cancer screening test concludes that a perfectly healthy patient has cancer.",
+    answer:"type1", why:"The patient does NOT have cancer (null hypothesis 'no disease' is TRUE). The test rejected it. Rejecting a true null = Type I error = false positive." },
+  { text:"A cancer screening test concludes that a patient who actually has cancer is healthy.",
+    answer:"type2", why:"The patient DOES have cancer (null 'no disease' is FALSE). The test accepted it. Accepting a false null = Type II error = false negative." },
+  { text:"A drug trial concludes the drug has a significant effect when in reality it has none.",
+    answer:"type1", why:"Reality: the drug does nothing (null is TRUE). The test rejected the true null → Type I." },
+  { text:"A drug trial concludes the drug has no significant effect when in reality it does work.",
+    answer:"type2", why:"Reality: the drug works (null is FALSE). The test accepted the false null → Type II." },
+  { text:"A statement asserting that there IS a relationship between two variables.",
+    answer:"alt", why:"That's literally the alternative hypothesis — it claims a relationship exists." },
+  { text:"A statement asserting that there is NO relationship between two variables.",
+    answer:"null", why:"That's the null hypothesis — assumes no relationship; what you try to reject." },
+  { text:"A spam filter incorrectly flags a real customer email as spam.",
+    answer:"type1", why:"Reality: email is legitimate (null 'not spam' is TRUE). Filter rejected the true null → Type I (false positive)." },
+  { text:"A spam filter lets a real phishing email through into the inbox.",
+    answer:"type2", why:"Reality: email IS spam/phishing (null 'not spam' is FALSE). Filter accepted the false null → Type II (false negative)." }
+];
+
+const ERROR_OPTIONS = {
+  null: { label:"Null Hypothesis" },
+  alt:  { label:"Alternative Hypothesis" },
+  type1:{ label:"Type I Error (False Positive)" },
+  type2:{ label:"Type II Error (False Negative)" }
+};
+
+const CONCEPT_QUESTIONS = [
+  { text:"A study reports a p-value of 0.03. What does this mean?",
+    options:[
+      { text:"The result is statistically significant; unlikely due to chance.", correct:true },
+      { text:"The result is not statistically significant.", correct:false },
+      { text:"There is a 97% chance the result is wrong.", correct:false },
+      { text:"The confidence interval is 97%.", correct:false }
+    ],
+    why:"p < 0.05 = statistically significant. p = 0.03 means there's only a 3% probability the observed result happened by chance." },
+
+  { text:"A study reports a p-value of 0.12. What does this mean?",
+    options:[
+      { text:"The result is statistically significant.", correct:false },
+      { text:"The result is NOT statistically significant — could be chance.", correct:true },
+      { text:"The result is impossible.", correct:false },
+      { text:"It means the null hypothesis is true.", correct:false }
+    ],
+    why:"p > 0.05 = not statistically significant. 0.12 means there's a 12% probability the result is due to chance, which exceeds the standard 0.05 threshold." },
+
+  { text:"To calculate a 95% confidence interval using Excel's CONFIDENCE function, what value of alpha do you use?",
+    options:[
+      { text:"0.95", correct:false },
+      { text:"0.05", correct:true },
+      { text:"0.5", correct:false },
+      { text:"0.5 + standard deviation", correct:false }
+    ],
+    why:"Alpha = 1 − confidence level. For 95% confidence, alpha = 0.05. For 99% it would be 0.01; for 90% it would be 0.10." },
+
+  { text:"An analyst computes a sample mean of 81 and a CONFIDENCE result of 6.25. What is the 95% confidence interval?",
+    options:[
+      { text:"81 to 87.25", correct:false },
+      { text:"74.75 to 87.25", correct:true },
+      { text:"6.25 to 81", correct:false },
+      { text:"6.25 to 87.25", correct:false }
+    ],
+    why:"CI bounds = mean ± CONFIDENCE result. 81 − 6.25 = 74.75 (lower), 81 + 6.25 = 87.25 (upper). Textbook example." },
+
+  { text:"A Pearson's r value of 0.48 between days absent and test score indicates:",
+    options:[
+      { text:"No correlation", correct:false },
+      { text:"A moderate correlation", correct:true },
+      { text:"A strong correlation", correct:false },
+      { text:"A perfect inverse correlation", correct:false }
+    ],
+    why:"r values between 0.4 and 0.7 represent moderate correlation. ~1 is strong, ~0 is none, negative r is inverse." },
+
+  { text:"In a regression output, R² (R Square) = 0.235. How should this be interpreted?",
+    options:[
+      { text:"23.5% of the variability in the dependent variable is explained by the independent variable.", correct:true },
+      { text:"There is a 23.5% chance the result is by chance.", correct:false },
+      { text:"The correlation strength is 23.5%.", correct:false },
+      { text:"The data is 23.5% complete.", correct:false }
+    ],
+    why:"R² is the coefficient of determination — multiply by 100% to read as the percent of variability explained. 76.5% remains explained by other factors." },
+
+  { text:"Which test is NON-parametric (does not require normal distribution)?",
+    options:[
+      { text:"T-test", correct:false },
+      { text:"Chi-square", correct:true },
+      { text:"Simple Linear Regression", correct:false },
+      { text:"Pearson's Correlation", correct:false }
+    ],
+    why:"Chi-square works on categorical data — it makes no normality assumption. The other three are parametric and assume normal distribution per Module 11B." }
+];
+
+/* =====================================================
+   ENGINE
+   ===================================================== */
+const byId = id => document.getElementById(id);
+const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+let MODE = 'test_match';
+let session = { right:0, total:0 };
+
+function updateScore(){ byId('sessScore').textContent = `${session.right} / ${session.total}`; }
+
+byId('darkToggle').onchange = e => document.body.classList.toggle('dark', e.target.checked);
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  MODE = t.dataset.mode;
+  render();
+});
+
+byId('newSet').onclick = render;
+byId('resetBtn').onclick = () => {
+  session = { right:0, total:0 };
+  updateScore();
+  render();
+};
+
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName||'').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if (e.key.toLowerCase() === 'n') render();
+  if (e.key.toLowerCase() === 'r') byId('resetBtn').click();
+  if (e.key === 'Enter') {
+    const cb = byId('checkBtn');
+    if (cb && !cb.disabled) cb.click();
+  }
+});
+
+function render(){
+  if (MODE === 'test_match')      renderDragMatch('test');
+  else if (MODE === 'sampling')   renderDragMatch('sampling');
+  else if (MODE === 'cues')       renderCues();
+  else if (MODE === 'errors')     renderErrors();
+  else if (MODE === 'concepts')   renderConcepts();
+  else if (MODE === 'mixed')      renderMixed();
+}
+
+/* ----- DRAG MATCH (Scenario → Test OR Scenario → Sampling) ----- */
+function renderDragMatch(kind){
+  const w = byId('work');
+  const isTest = (kind === 'test');
+  const allScenarios = isTest ? TEST_SCENARIOS : SAMPLING_SCENARIOS;
+  const optionMap = isTest ? TESTS : SAMPLING_METHODS;
+  const setSize = isTest ? 5 : 5;
+
+  const picks = shuffle(allScenarios).slice(0, setSize);
+  // collect option keys that are present + a couple distractors
+  const presentKeys = [...new Set(picks.map(p => p.answer))];
+  const allKeys = Object.keys(optionMap);
+  const distractors = shuffle(allKeys.filter(k => !presentKeys.includes(k))).slice(0, Math.max(0, Math.min(3, allKeys.length - presentKeys.length)));
+  // chips: one per scenario plus 1-2 distractors. To make it harder, allow duplicates if multiple scenarios share an answer.
+  const chipKeys = shuffle([...picks.map(p => p.answer), ...distractors]);
+
+  byId('checkBtn').disabled = false;
+
+  const promptText = isTest
+    ? "Drag the correct <b>statistical test</b> onto each scenario. Look for: how many groups? continuous vs categorical data? predicting vs measuring strength?"
+    : "Drag the correct <b>sampling method</b> onto each scenario. Look for: equal chance? subgroups? every nth? all of selected clusters? referrals?";
+
+  w.innerHTML = `
+    <div class="hint">${promptText}</div>
+    <p class="muted" style="margin:10px 0 6px"><b>Answer bank</b> — drag from here:</p>
+    <div class="bank" id="bank">
+      ${chipKeys.map((k,i) => `<div class="chip" draggable="true" data-key="${k}" data-id="chip${i}" style="border-left:4px solid ${isTest ? optionMap[k].color : 'var(--accent)'}">${optionMap[k].label}</div>`).join('')}
+    </div>
+    <div class="scenarios-stack">
+      ${picks.map((s,i) => `
+        <div class="scenario" data-answer="${s.answer}" data-idx="${i}">
+          <div class="text">
+            ${s.text}
+            ${s.clues ? `<div class="tagsline">${s.clues.map(c => `<span class="ctag">${c}</span>`).join('')}</div>` : ''}
+          </div>
+          <div class="drop" data-idx="${i}"><span class="placeholder">Drop here…</span></div>
+        </div>
+      `).join('')}
+    </div>
+    <div id="feedback" class="feedback"></div>
+  `;
+
+  wireDragDrop(picks);
+}
+
+function wireDragDrop(picks){
+  const bank = byId('bank');
+  let draggedEl = null;
+
+  document.querySelectorAll('.chip').forEach(ch => {
+    ch.addEventListener('dragstart', e => {
+      draggedEl = ch;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', ch.dataset.id);
+      setTimeout(() => ch.style.opacity = '0.4', 0);
+    });
+    ch.addEventListener('dragend', () => {
+      if (draggedEl) draggedEl.style.opacity = '';
+      draggedEl = null;
+      document.querySelectorAll('.drop').forEach(d => d.classList.remove('over'));
+    });
+    // click-to-return for chips placed in drops
+    ch.addEventListener('click', () => {
+      if (ch.parentElement.classList.contains('drop')) {
+        ch.classList.remove('placed','correct','incorrect');
+        ch.style.opacity = '';
+        bank.appendChild(ch);
+        refreshPlaceholders();
+      }
+    });
+  });
+
+  document.querySelectorAll('.drop').forEach(drop => {
+    drop.addEventListener('dragover', e => {
+      e.preventDefault();
+      drop.classList.add('over');
+    });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault();
+      drop.classList.remove('over');
+      if (!draggedEl) return;
+      // if drop already has a chip, send it back to bank
+      const existing = drop.querySelector('.chip');
+      if (existing) {
+        existing.classList.remove('placed','correct','incorrect');
+        bank.appendChild(existing);
+      }
+      // remove placeholder
+      const ph = drop.querySelector('.placeholder');
+      if (ph) ph.remove();
+      drop.appendChild(draggedEl);
+      draggedEl.classList.add('placed');
+      draggedEl.classList.remove('correct','incorrect');
+      draggedEl.style.opacity = '';
+      refreshPlaceholders();
+    });
+  });
+
+  // also allow drop back into bank
+  bank.addEventListener('dragover', e => e.preventDefault());
+  bank.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!draggedEl) return;
+    draggedEl.classList.remove('placed','correct','incorrect');
+    bank.appendChild(draggedEl);
+    refreshPlaceholders();
+  });
+
+  function refreshPlaceholders(){
+    document.querySelectorAll('.drop').forEach(d => {
+      if (!d.querySelector('.chip') && !d.querySelector('.placeholder')) {
+        const ph = document.createElement('span');
+        ph.className = 'placeholder';
+        ph.textContent = 'Drop here…';
+        d.appendChild(ph);
+      }
+    });
+  }
+
+  byId('checkBtn').onclick = () => {
+    let right = 0, total = picks.length;
+    const fb = byId('feedback');
+    fb.innerHTML = '';
+    document.querySelectorAll('.scenario').forEach(sc => {
+      const idx = +sc.dataset.idx;
+      const expected = sc.dataset.answer;
+      const drop = sc.querySelector('.drop');
+      const chip = drop.querySelector('.chip');
+      const card = document.createElement('div');
+      card.className = 'fb-card';
+      if (!chip) {
+        card.classList.add('wrong');
+        card.innerHTML = `<b>Scenario ${idx+1}:</b> No answer placed. Correct: <b>${labelFor(expected)}</b>.<div class="why">${picks[idx].why}</div>`;
+      } else {
+        const got = chip.dataset.key;
+        if (got === expected) {
+          chip.classList.add('correct');
+          card.classList.add('right');
+          card.innerHTML = `<b>Scenario ${idx+1}:</b> ✓ <b>${labelFor(expected)}</b> — correct.<div class="why">${picks[idx].why}</div>`;
+          right++;
+        } else {
+          chip.classList.add('incorrect');
+          card.classList.add('wrong');
+          card.innerHTML = `<b>Scenario ${idx+1}:</b> ✗ You answered <b>${labelFor(got)}</b>. Correct: <b>${labelFor(expected)}</b>.<div class="why">${picks[idx].why}</div>`;
+        }
+      }
+      fb.appendChild(card);
+    });
+    session.right += right;
+    session.total += total;
+    updateScore();
+    const summary = document.createElement('div');
+    summary.className = right === total ? 'good' : 'bad';
+    summary.textContent = right === total ? `✓ Perfect — ${right}/${total}` : `${right}/${total} correct. Review explanations below.`;
+    fb.prepend(summary);
+    byId('checkBtn').disabled = true;
+  };
+}
+
+function labelFor(key){
+  return (TESTS[key] && TESTS[key].label)
+      || (SAMPLING_METHODS[key] && SAMPLING_METHODS[key].label)
+      || (ERROR_OPTIONS[key] && ERROR_OPTIONS[key].label)
+      || key;
+}
+
+/* ----- CUE WORDS (flashcard MCQ) ----- */
+function renderCues(){
+  const w = byId('work');
+  const q = shuffle(CUE_WORDS)[0];
+  byId('checkBtn').disabled = true;
+
+  w.innerHTML = `
+    <div class="cue-card">
+      <div class="label">Cue phrase</div>
+      <div class="phrase">${q.phrase}</div>
+    </div>
+    <p class="muted">Which concept matches this cue?</p>
+    <div class="mcq-options">
+      ${shuffle(q.choices).map(c => `<button class="mcq-opt" data-v="${c}">${c}</button>`).join('')}
+    </div>
+    <div id="feedback" class="feedback"></div>
+  `;
+
+  let answered = false;
+  w.querySelectorAll('.mcq-opt').forEach(b => b.onclick = () => {
+    if (answered) return;
+    answered = true;
+    const got = b.dataset.v;
+    const ok = got === q.answer;
+    w.querySelectorAll('.mcq-opt').forEach(o => {
+      o.classList.add('revealed');
+      if (o.dataset.v === q.answer) o.classList.add('correct');
+      else if (o.dataset.v === got) o.classList.add('incorrect');
+    });
+    const fb = byId('feedback');
+    fb.innerHTML = `
+      <div class="fb-card ${ok ? 'right' : 'wrong'}">
+        ${ok ? `✓ Correct — <b>${q.answer}</b>` : `✗ The answer is <b>${q.answer}</b>`}
+        <div class="why">${q.why}</div>
+      </div>
+    `;
+    session.right += ok ? 1 : 0;
+    session.total += 1;
+    updateScore();
+  });
+}
+
+/* ----- ERRORS & HYPOTHESES (drag match) ----- */
+function renderErrors(){
+  const w = byId('work');
+  const picks = shuffle(ERROR_SCENARIOS).slice(0, 5);
+  const chipKeys = shuffle([...picks.map(p => p.answer), 'null']); // throw in null for distractor density if absent
+
+  // ensure all 4 chips at least once
+  const all = ['null','alt','type1','type2'];
+  const missing = all.filter(k => !chipKeys.includes(k));
+  const finalChipKeys = shuffle([...chipKeys, ...missing]);
+
+  byId('checkBtn').disabled = false;
+
+  w.innerHTML = `
+    <div class="hint">Drag each chip onto the matching scenario. Remember: Type 1 = false <b>positive</b> (rejecting a true null). Type 2 = false <b>negative</b> (accepting a false null).</div>
+    <p class="muted" style="margin:10px 0 6px"><b>Answer bank</b>:</p>
+    <div class="bank" id="bank">
+      ${finalChipKeys.map((k,i) => `<div class="chip" draggable="true" data-key="${k}" data-id="chip${i}" style="border-left:4px solid #884EA0">${ERROR_OPTIONS[k].label}</div>`).join('')}
+    </div>
+    <div class="scenarios-stack">
+      ${picks.map((s,i) => `
+        <div class="scenario color-error" data-answer="${s.answer}" data-idx="${i}">
+          <div class="text">${s.text}</div>
+          <div class="drop" data-idx="${i}"><span class="placeholder">Drop here…</span></div>
+        </div>
+      `).join('')}
+    </div>
+    <div id="feedback" class="feedback"></div>
+  `;
+  wireDragDrop(picks);
+}
+
+/* ----- CONCEPTS (MCQ) ----- */
+function renderConcepts(){
+  const w = byId('work');
+  const q = shuffle(CONCEPT_QUESTIONS)[0];
+  byId('checkBtn').disabled = true;
+
+  w.innerHTML = `
+    <div class="hint" style="font-size:1rem">${q.text}</div>
+    <div class="mcq-options" style="margin-top:14px">
+      ${shuffle(q.options).map((o,i) => `<button class="mcq-opt" data-correct="${o.correct}">${o.text}</button>`).join('')}
+    </div>
+    <div id="feedback" class="feedback"></div>
+  `;
+  let answered = false;
+  w.querySelectorAll('.mcq-opt').forEach(b => b.onclick = () => {
+    if (answered) return;
+    answered = true;
+    const ok = b.dataset.correct === 'true';
+    w.querySelectorAll('.mcq-opt').forEach(o => {
+      o.classList.add('revealed');
+      if (o.dataset.correct === 'true') o.classList.add('correct');
+      else if (o === b) o.classList.add('incorrect');
+    });
+    byId('feedback').innerHTML = `
+      <div class="fb-card ${ok ? 'right' : 'wrong'}">
+        ${ok ? '✓ Correct' : '✗ Incorrect'}
+        <div class="why">${q.why}</div>
+      </div>
+    `;
+    session.right += ok ? 1 : 0;
+    session.total += 1;
+    updateScore();
+  });
+}
+
+/* ----- MIXED DRILL ----- */
+function renderMixed(){
+  // randomly pick one of the modes other than mixed
+  const modes = ['test_match','sampling','cues','errors','concepts'];
+  const chosen = modes[Math.floor(Math.random() * modes.length)];
+  const prev = MODE;
+  MODE = chosen;
+  if (chosen === 'test_match')      renderDragMatch('test');
+  else if (chosen === 'sampling')   renderDragMatch('sampling');
+  else if (chosen === 'cues')       renderCues();
+  else if (chosen === 'errors')     renderErrors();
+  else if (chosen === 'concepts')   renderConcepts();
+  MODE = prev; // restore so 'New Set' still rolls mixed
+  // small badge to show what got drawn
+  const note = document.createElement('p');
+  note.className = 'muted';
+  note.style.marginTop = '8px';
+  note.innerHTML = `<small>Mixed drill rolled: <b>${({test_match:'Scenarios → Test',sampling:'Sampling → Method',cues:'Cue Words',errors:'Errors & Hypotheses',concepts:'P-values & CI'})[chosen]}</b></small>`;
+  byId('work').appendChild(note);
+}
+
+// initial render
+updateScore();
+render();
+</script>
+</body>
+</html>

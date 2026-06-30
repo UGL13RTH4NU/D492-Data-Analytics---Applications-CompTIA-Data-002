@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D492 Module 12 — Statistical Test Decision Reference</title>
+<style>
+  /* Adaptive light/dark mode via CSS variables */
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f5f5f7;
+    --bg-section: rgba(128,128,128,0.08);
+    --border: rgba(128,128,128,0.35);
+    --border-strong: rgba(128,128,128,0.55);
+    --text: #1d1d1f;
+    --text-soft: #4a4a4f;
+    --blue: #2874A6;
+    --green: #1e8449;
+    --red: #C0392B;
+    --orange: #CA6F1E;
+    --purple: #7D3C98;
+    --yellow-bg: rgba(241,196,15,0.18);
+    --red-bg: rgba(231,76,60,0.12);
+    --blue-bg: rgba(52,152,219,0.10);
+    --green-bg: rgba(46,204,113,0.10);
+    --purple-bg: rgba(155,89,182,0.10);
+    --orange-bg: rgba(230,126,34,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1d;
+      --bg-soft: #242428;
+      --bg-section: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.18);
+      --border-strong: rgba(255,255,255,0.32);
+      --text: #f0f0f3;
+      --text-soft: #b8b8bd;
+      --blue: #5DADE2;
+      --green: #58D68D;
+      --red: #EC7063;
+      --orange: #F5B041;
+      --purple: #BB8FCE;
+      --yellow-bg: rgba(241,196,15,0.15);
+      --red-bg: rgba(236,112,99,0.15);
+      --blue-bg: rgba(93,173,226,0.12);
+      --green-bg: rgba(88,214,141,0.12);
+      --purple-bg: rgba(187,143,206,0.12);
+      --orange-bg: rgba(245,176,65,0.12);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.7em;
+    margin: 0 0 4px 0;
+    color: var(--purple);
+  }
+  h2 {
+    font-size: 1.25em;
+    margin: 32px 0 8px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border-strong);
+    color: var(--text);
+  }
+  h3 {
+    font-size: 1.05em;
+    margin: 18px 0 6px 0;
+    color: var(--blue);
+  }
+  .subtitle {
+    color: var(--text-soft);
+    font-size: 0.95em;
+    margin-bottom: 24px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 16px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-section);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-strong);
+  }
+  tr:hover td { background: var(--bg-section); }
+
+  .legend-row td:first-child { font-weight: 600; width: 22%; }
+  .legend-row td:nth-child(2) { width: 32%; }
+  .legend-row td:nth-child(3) { width: 20%; }
+  .legend-row td:nth-child(4) { width: 26%; color: var(--text-soft); font-size: 0.9em; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.82em;
+    font-weight: 600;
+    margin-right: 4px;
+    margin-bottom: 2px;
+  }
+  .pill-cont { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); }
+  .pill-cat { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+  .pill-num { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange); }
+
+  .callout {
+    background: var(--bg-section);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--blue);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+  }
+  .callout-warn {
+    border-left-color: var(--red);
+    background: var(--red-bg);
+  }
+  .callout-tip {
+    border-left-color: var(--green);
+    background: var(--green-bg);
+  }
+  .callout-key {
+    border-left-color: var(--purple);
+    background: var(--purple-bg);
+  }
+  .callout strong { color: var(--text); }
+
+  .tree {
+    background: var(--bg-section);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+  .tree b { color: var(--green); }
+  .tree .q { color: var(--purple); font-weight: 600; }
+  .tree .arrow { color: var(--orange); }
+
+  code {
+    background: var(--bg-section);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: var(--red);
+  }
+
+  .trigger-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .trigger-list li {
+    padding: 6px 10px;
+    margin: 4px 0;
+    background: var(--bg-section);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .trigger-list .phrase {
+    color: var(--orange);
+    font-weight: 600;
+  }
+  .trigger-list .arrow { color: var(--text-soft); margin: 0 6px; }
+  .trigger-list .result { color: var(--green); font-weight: 600; }
+
+  .blue { color: var(--blue); }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .orange { color: var(--orange); }
+  .purple { color: var(--purple); }
+  .b { font-weight: 700; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 14px; }
+    table { font-size: 0.85em; }
+    th, td { padding: 6px 6px; }
+    h1 { font-size: 1.4em; }
+    .tree { font-size: 0.78em; }
+  }
+
+  @media print {
+    body { background: white; color: black; max-width: none; }
+    .callout, .tree, table { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>D492 Module 12 — Statistical Test Decision Reference</h1>
+<p class="subtitle">Quick-scan chart for picking the right test on Data+ questions. Read variable types first, then match to the row.</p>
+
+<!-- ============================================================ -->
+<!-- VARIABLE TYPE LEGEND -->
+<!-- ============================================================ -->
+<h2>🏷️ Variable Type Legend (read this first)</h2>
+<p>Every test choice starts with classifying your variables. Memorize these labels — the pills are used throughout this chart.</p>
+<table>
+  <tr><th>Pill</th><th>Type</th><th>Examples</th></tr>
+  <tr>
+    <td><span class="pill pill-cont">Continuous</span></td>
+    <td>Numeric, can take any value in a range. Meaningful arithmetic (means, std dev).</td>
+    <td>Test scores, height, days absent, revenue, BMI, study hours</td>
+  </tr>
+  <tr>
+    <td><span class="pill pill-cat">Categorical</span></td>
+    <td>Discrete labels or groups. No meaningful arithmetic on the values themselves.</td>
+    <td>Pass/Fail, Yes/No, Region (N/S/E/W), Very/Somewhat/Not Prepared, Male/Female</td>
+  </tr>
+  <tr>
+    <td><span class="pill pill-num">Ordinal</span></td>
+    <td>Categorical with an order. Often treated as categorical on Data+.</td>
+    <td>Likert scales (1–5), education level, satisfaction tiers</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- MASTER DECISION TREE -->
+<!-- ============================================================ -->
+<h2>🌳 Master Decision Tree</h2>
+<p>Walk this top-down. Stop at the first match.</p>
+
+<div class="tree">
+<span class="q">Q: What is the question asking you to do?</span><br><br>
+
+├── <span class="q">Compare AVERAGES / MEANS?</span><br>
+│   ├── 1 sample vs a known value or benchmark <span class="arrow">→</span> <b>One-sample t-test</b><br>
+│   ├── 2 independent groups <span class="arrow">→</span> <b>Two-sample (independent) t-test</b><br>
+│   ├── 2 related samples (before/after, matched pairs) <span class="arrow">→</span> <b>Paired t-test</b><br>
+│   └── 3+ groups <span class="arrow">→</span> <b>ANOVA</b><br><br>
+
+├── <span class="q">Measure a RELATIONSHIP between two variables?</span><br>
+│   ├── Both <span class="pill pill-cont">Continuous</span>, just want strength &amp; direction <span class="arrow">→</span> <b>Pearson Correlation (r)</b><br>
+│   ├── Both <span class="pill pill-cont">Continuous</span>, want a prediction line / equation <span class="arrow">→</span> <b>Simple Linear Regression</b><br>
+│   └── Both <span class="pill pill-cat">Categorical</span> <span class="arrow">→</span> <b>Chi-Square Test of Independence</b><br><br>
+
+├── <span class="q">Check if observed data fits an EXPECTED distribution?</span><br>
+│   └── 1 <span class="pill pill-cat">Categorical</span> variable <span class="arrow">→</span> <b>Chi-Square Goodness of Fit</b><br><br>
+
+├── <span class="q">Estimate a RANGE for the true population mean?</span><br>
+│   └── <span class="arrow">→</span> <b>Confidence Interval</b> (not a test — an estimation method)<br><br>
+
+└── <span class="q">Locate a single value relative to the mean?</span><br>
+    └── <span class="arrow">→</span> <b>Z-score</b> (not a test — a position measure)
+</div>
+
+<div class="callout callout-tip">
+  <strong>🎯 The override rule:</strong> When a question says "<em>relationship between two variables</em>," do NOT reflexively pick Correlation. Classify the variables first. Two categoricals → Chi-Square. Two continuous → Correlation/Regression. This is the #1 trap in Module 12 questions.
+</div>
+
+<!-- ============================================================ -->
+<!-- T-TEST FAMILY -->
+<!-- ============================================================ -->
+<h2>🧪 The t-test Family — Comparing Means</h2>
+<p>All three use the t-distribution but answer different questions. Choose by <strong>what you're comparing</strong>.</p>
+
+<table>
+  <tr>
+    <th>Test</th>
+    <th>Use it when…</th>
+    <th>Variables</th>
+    <th>Example stem</th>
+  </tr>
+  <tr>
+    <td class="b">One-Sample t-test</td>
+    <td>Compare ONE sample's mean to a <span class="b">known/expected/benchmark</span> value.</td>
+    <td><span class="pill pill-cont">Continuous</span> sample mean vs a fixed number</td>
+    <td>"Is the class average significantly different from 75?" / "Compare average score to an external benchmark."</td>
+  </tr>
+  <tr>
+    <td class="b">Two-Sample (Independent) t-test</td>
+    <td>Compare means of <span class="b">2 independent groups</span> (different people in each group).</td>
+    <td><span class="pill pill-cont">Continuous</span> DV, <span class="pill pill-cat">Categorical</span> IV (2 groups)</td>
+    <td>"Compare test scores of Classroom A (new program) vs Classroom B (control)."</td>
+  </tr>
+  <tr>
+    <td class="b">Paired t-test</td>
+    <td>Compare means of <span class="b">related/matched samples</span> — same subjects measured twice, or pairs.</td>
+    <td><span class="pill pill-cont">Continuous</span>, two measurements per subject</td>
+    <td>"Compare student scores BEFORE and AFTER a study program (same students)."</td>
+  </tr>
+  <tr>
+    <td class="b">ANOVA</td>
+    <td>Compare means across <span class="b">3 or more groups</span>.</td>
+    <td><span class="pill pill-cont">Continuous</span> DV, <span class="pill pill-cat">Categorical</span> IV (3+ groups)</td>
+    <td>"Compare average scores across freshmen, sophomores, juniors, seniors."</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <strong>Excel:</strong> All four are in Data → Data Analysis (Analysis ToolPak). t-Test has three sub-options: <code>Two-Sample Assuming Equal Variances</code>, <code>Two-Sample Assuming Unequal Variances</code>, and <code>Paired Two Sample for Means</code>. ANOVA also lives there as <code>Anova: Single Factor</code>.
+</div>
+
+<!-- ============================================================ -->
+<!-- CORRELATION & REGRESSION FAMILY -->
+<!-- ============================================================ -->
+<h2>🔗 Correlation &amp; Regression — Continuous Relationships</h2>
+<p>Both deal with two continuous variables. Difference: <span class="b">correlation describes</span>, <span class="b">regression predicts</span>.</p>
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th>What it does</th>
+    <th>Variables</th>
+    <th>Key Output</th>
+  </tr>
+  <tr>
+    <td class="b">Pearson Correlation</td>
+    <td>Measures the <span class="b">strength &amp; direction</span> of a linear relationship.</td>
+    <td>Two <span class="pill pill-cont">Continuous</span></td>
+    <td><span class="b">r</span> (range: −1 to +1)</td>
+  </tr>
+  <tr>
+    <td class="b">Simple Linear Regression</td>
+    <td>Models the relationship as a <span class="b">line of best fit</span>; lets you predict DV from IV.</td>
+    <td>1 <span class="pill pill-cont">Continuous</span> IV → 1 <span class="pill pill-cont">Continuous</span> DV</td>
+    <td>Regression equation + <span class="b">R²</span>, p-values, Multiple R</td>
+  </tr>
+</table>
+
+<h3>The key metrics — don't confuse them</h3>
+<table>
+  <tr>
+    <th>Metric</th>
+    <th>What it tells you</th>
+    <th>Range</th>
+    <th>How to read it</th>
+  </tr>
+  <tr>
+    <td><b>r (Pearson coefficient)</b></td>
+    <td>Strength + DIRECTION of linear relationship.</td>
+    <td>−1 to +1</td>
+    <td>
+      <span class="green b">Sign:</span> + same direction, − opposite<br>
+      |r| &lt; 0.3: weak<br>
+      0.3 ≤ |r| &lt; 0.7: moderate<br>
+      |r| ≥ 0.7: strong
+    </td>
+  </tr>
+  <tr>
+    <td><b>R² (R Square)</b></td>
+    <td>Proportion of variance in DV explained by IV. <span class="b">No direction</span> — always positive.</td>
+    <td>0 to 1</td>
+    <td>
+      0.23 → "23% of variance explained"<br>
+      Remaining = other factors<br>
+      For simple linear regression: <code>R² = r²</code>
+    </td>
+  </tr>
+  <tr>
+    <td><b>Multiple R</b></td>
+    <td>The correlation coefficient as Excel reports it in regression output. <span class="b">Always shown positive.</span></td>
+    <td>0 to 1</td>
+    <td>Equals |r| for simple linear regression. Don't expect a sign here — check the slope coefficient to know direction.</td>
+  </tr>
+  <tr>
+    <td><b>Adjusted R²</b></td>
+    <td>R² penalized for adding more predictors. Used in multiple regression.</td>
+    <td>≤ R²</td>
+    <td>Use when comparing models with different numbers of predictors.</td>
+  </tr>
+  <tr>
+    <td><b>p-value (in regression)</b></td>
+    <td>Significance of each coefficient — is the relationship statistically real?</td>
+    <td>0 to 1</td>
+    <td>&lt; 0.05 → significant relationship; ≥ 0.05 → can't rule out chance</td>
+  </tr>
+</table>
+
+<div class="callout callout-key">
+  <strong>🔑 The most testable distinction:</strong> r tells you <em>how related</em>. R² tells you <em>how much one explains the other</em>. They're not the same number (except by formula relationship), and they answer different questions on the exam.
+</div>
+
+<!-- ============================================================ -->
+<!-- CHI-SQUARE FAMILY -->
+<!-- ============================================================ -->
+<h2>📊 Chi-Square Family — Categorical Data</h2>
+<p>Both use the chi-square (χ²) distribution. Choose by <strong>how many variables</strong>.</p>
+
+<table>
+  <tr>
+    <th>Test</th>
+    <th>Question it answers</th>
+    <th>Variables</th>
+    <th>Example stem</th>
+  </tr>
+  <tr>
+    <td class="b">Goodness of Fit</td>
+    <td>Does the observed distribution of <span class="b">one variable</span> match an expected distribution?</td>
+    <td>1 <span class="pill pill-cat">Categorical</span></td>
+    <td>"Do regional cell phone sales match the expected regional distribution?"</td>
+  </tr>
+  <tr>
+    <td class="b">Test of Independence</td>
+    <td>Are <span class="b">two categorical variables</span> related, or independent of each other?</td>
+    <td>2 <span class="pill pill-cat">Categorical</span></td>
+    <td>"Is preparedness level (Very/Somewhat/Not) associated with exam outcome (Pass/Fail)?"</td>
+  </tr>
+</table>
+
+<div class="callout callout-warn">
+  <strong>⚠️ The recurring Module 12 trap:</strong> When you see "relationship between two variables" with categorical data, your brain may default to <span class="b red">Correlation</span> — but correlation requires continuous variables. Categorical × Categorical "relationship" → <span class="b green">Chi-Square Test of Independence</span>, always.
+</div>
+
+<!-- ============================================================ -->
+<!-- OTHER MODULE 12 CONCEPTS -->
+<!-- ============================================================ -->
+<h2>📏 Supporting Concepts (not tests, but tested)</h2>
+<table>
+  <tr><th>Concept</th><th>What it is</th><th>When to use</th><th>Formula / Notes</th></tr>
+  <tr>
+    <td class="b">p-value</td>
+    <td>Probability of observing this data <em>if the null hypothesis were true</em>.</td>
+    <td>Interpret any test result for significance.</td>
+    <td>
+      &lt; 0.05 → significant, reject H₀<br>
+      ≥ 0.05 → not significant, fail to reject H₀<br>
+      <span class="red b">NOT</span> the probability the null is true.
+    </td>
+  </tr>
+  <tr>
+    <td class="b">Confidence Interval</td>
+    <td>Range likely to contain the true population parameter.</td>
+    <td>When you want a range, not a single estimate.</td>
+    <td>
+      CI = mean ± margin of error<br>
+      Excel: <code>CONFIDENCE(alpha, sd, n)</code> returns the margin<br>
+      Default level: 95%
+    </td>
+  </tr>
+  <tr>
+    <td class="b">Z-score</td>
+    <td>Number of standard deviations a value sits from the mean.</td>
+    <td>Locate one value; check empirical rule (68/95/99.7%).</td>
+    <td>z = (x − μ) / σ<br>Not a test — a position measure.</td>
+  </tr>
+  <tr>
+    <td class="b">Null Hypothesis (H₀)</td>
+    <td>Negative statement: "no effect / no relationship."</td>
+    <td>Default assumption you try to disprove.</td>
+    <td>"Means are equal." / "Variables are independent."</td>
+  </tr>
+  <tr>
+    <td class="b">Alternative Hypothesis (H₁)</td>
+    <td>Positive statement: "there IS an effect / relationship."</td>
+    <td>The claim you're testing.</td>
+    <td>"Means differ." / "Variables are associated."</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- KEYWORD TRIGGER INDEX -->
+<!-- ============================================================ -->
+<h2>🔑 Trigger Keyword Index</h2>
+<p>When you see these phrases in a question stem, they usually point to the test on the right:</p>
+
+<ul class="trigger-list">
+  <li><span class="phrase">"compare to a benchmark / known value / population mean"</span> <span class="arrow">→</span> <span class="result">One-sample t-test</span></li>
+  <li><span class="phrase">"compare two groups / classrooms / samples"</span> <span class="arrow">→</span> <span class="result">Two-sample t-test</span></li>
+  <li><span class="phrase">"before and after / matched pairs / repeated measures"</span> <span class="arrow">→</span> <span class="result">Paired t-test</span></li>
+  <li><span class="phrase">"compare across three or more groups"</span> <span class="arrow">→</span> <span class="result">ANOVA</span></li>
+  <li><span class="phrase">"linear relationship between [continuous] and [continuous]"</span> <span class="arrow">→</span> <span class="result">Correlation</span></li>
+  <li><span class="phrase">"quantify the strength of the relationship"</span> <span class="arrow">→</span> <span class="result">Correlation (r) or Regression</span></li>
+  <li><span class="phrase">"predict / line of best fit / regression line / trend line"</span> <span class="arrow">→</span> <span class="result">Simple Linear Regression</span></li>
+  <li><span class="phrase">"how much variance is explained"</span> <span class="arrow">→</span> <span class="result">R Square (regression output)</span></li>
+  <li><span class="phrase">"association between [categorical] and [categorical]"</span> <span class="arrow">→</span> <span class="result">Chi-Square Test of Independence</span></li>
+  <li><span class="phrase">"observed vs expected / one variable / matches a distribution"</span> <span class="arrow">→</span> <span class="result">Chi-Square Goodness of Fit</span></li>
+  <li><span class="phrase">"how many standard deviations from the mean"</span> <span class="arrow">→</span> <span class="result">Z-score</span></li>
+  <li><span class="phrase">"range that likely contains the true mean"</span> <span class="arrow">→</span> <span class="result">Confidence Interval</span></li>
+  <li><span class="phrase">"likely due to chance / statistically significant"</span> <span class="arrow">→</span> <span class="result">P-value interpretation</span></li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- COMMON TRAPS -->
+<!-- ============================================================ -->
+<h2>⚠️ Common Traps to Watch For</h2>
+
+<div class="callout callout-warn">
+  <strong>Trap 1 — The "Relationship" reflex:</strong> "Relationship between two variables" does NOT automatically mean correlation. Check variable types BEFORE choosing. Categorical × Categorical = Chi-Square Independence, not correlation.
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 2 — P-value inversion:</strong> p &lt; 0.05 means the result is <span class="b green">UNLIKELY due to chance</span> (so it's significant). Distractors often flip this: "p &lt; 0.05 means the results happened due to chance" is wrong.
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 3 — Correlation ≠ Causation:</strong> Any option claiming a correlation result "<span class="b red">proves</span>," "<span class="b red">causes</span>," or "<span class="b red">guarantees</span>" an outcome is wrong. Correlation describes association only.
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 4 — Low R² ≠ No relationship:</strong> R² = 0.23 means attendance explains 23% of variance — that's still a real (moderate) relationship. Don't dismiss it as "no relationship at all."
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 5 — CONFIDENCE() function output:</strong> Excel's <code>CONFIDENCE()</code> returns the <span class="b">margin of error (half-width)</span>, not the full interval. Apply it as <code>mean ± output</code>. The mean must be at the midpoint of the reported interval.
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 6 — Null vs Alternative confusion:</strong> Null hypothesis = negative statement (no effect). Alternative = positive statement (there IS an effect). Converting a research question "to a positive statement" creates the <span class="b">alternative</span> hypothesis.
+</div>
+
+<div class="callout callout-warn">
+  <strong>Trap 7 — "Line of best fit" on categorical data:</strong> Distractors sometimes pair "Simple Linear Regression" with a description involving categorical variables and a line of best fit. You can't draw a meaningful regression line through Pass/Fail data — that's the giveaway.
+</div>
+
+<!-- ============================================================ -->
+<!-- 30-SECOND ANSWER PROCESS -->
+<!-- ============================================================ -->
+<h2>🎯 The 30-Second Process for Test-Selection Questions</h2>
+<div class="callout callout-tip">
+  <ol style="margin: 0; padding-left: 20px;">
+    <li><strong>Identify both variables.</strong> Continuous or categorical? (Write it down if needed.)</li>
+    <li><strong>Identify the question type.</strong> Comparing means? Measuring a relationship? Checking a distribution?</li>
+    <li><strong>Match to the decision tree</strong> at the top of this sheet. Do not skip step 1.</li>
+    <li><strong>Sanity-check with the trigger keywords.</strong> Did the stem use words like "predict," "before/after," "association," "benchmark"?</li>
+    <li><strong>Eliminate the trap distractors.</strong> Anything claiming "proves," "guarantees," "causes," or that pairs a test name with an impossible purpose (line of best fit on categorical data, etc.).</li>
+  </ol>
+</div>
+
+<hr>
+<p style="color: var(--text-soft); font-size: 0.85em; text-align: center; margin-top: 30px;">
+  D492 Module 12 Reference · Built for CompTIA Data+ (DA0-002)<br>
+  Save / bookmark / print this page for use during practice quizzes.
+</p>
+
+</body>
+</html>
