@@ -59,7 +59,7 @@ D492 Data+ 002
 ## How to use it
 
 1. Install [Anki](https://apps.ankiweb.net/) (there are no charges for the desktop or Android mobile apps, but you should probably drop a donation to the folks that create and maintain Anki).
-2. Download `D492_Data_Plus_002.apkg` from this repo.
+2. Download **`D492 Data+ 002 - Scotts Fresh Deck.apkg`** from this repo.
 3. In Anki: **File → Import** and select the file.
 4. The deck and all sub-decks will appear under **D492 Data+ 002**. Study the parent deck to cycle through everything, or click into a specific module or the quiz sub-decks for focused review.
 
@@ -76,7 +76,7 @@ CompTIA Data+ DA0-002 is the v2 of the Data+ exam:
 
 ## Caveats
 
-- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it. YOU should varify (see what I mean) any information that was produced by Claude or myself on your own.
+- This is **personal study material**, not an official resource. CompTIA and WGU did not produce or endorse it. YOU should varify (<--- see what I mean) any information that was produced by Claude or myself on your own.
 - Cards reflect my best understanding of the CertMaster Perform content as of when I wrote them. If you find an error or a card you disagree with, please let me know.
 - Do **not** use this as a substitute for working through the CertMaster content yourself. Flashcards reinforce knowledge; they don't build it from scratch. The CertMaster Perform material is very good and I recommend using it in conjunction with the Anki deck.
 - Don't memorize answers — the Anki deck and the real exam are not the same. DO read the explanations when you get something wrong. They are detailed and meant to help with understanding the material.
