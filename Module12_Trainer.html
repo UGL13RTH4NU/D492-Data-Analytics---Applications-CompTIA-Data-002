@@ -67,7 +67,7 @@ button.primary:hover{filter:brightness(1.05);background:var(--accent)}
 .grid{display:grid;gap:10px}
 
 /* drag/drop */
-.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;padding:10px;background:var(--chip);border-radius:10px;min-height:60px;border:1px dashed var(--dash)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:10px;background:var(--chip);border-radius:10px;min-height:60px;border:1px dashed var(--dash)}
 .bank.empty{opacity:.6}
 .scenarios-stack{display:grid;gap:10px;margin-top:14px}
 .scenario{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 200px;gap:12px;align-items:start}
@@ -79,6 +79,10 @@ button.primary:hover{filter:brightness(1.05);background:var(--accent)}
 .drop.over{border-color:var(--accent);background:var(--chip)}
 .drop .placeholder{color:var(--muted);font-size:.82rem;font-style:italic}
 .chip{padding:7px 11px;border:1px solid var(--border);background:var(--panel);border-radius:8px;font-size:.88rem;font-weight:600;cursor:grab;user-select:none;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+.chip.has-sub{flex-direction:column;align-items:center;padding:6px 10px 6px;line-height:1.15;text-align:center;gap:1px}
+.chip .main{display:block;line-height:1.15}
+.chip .sub{display:block;font-size:.72rem;font-weight:500;color:var(--muted);line-height:1.1;margin-top:1px}
+.chip.correct .sub, .chip.incorrect .sub{color:inherit;opacity:.85}
 .chip:active{cursor:grabbing}
 .chip.placed{cursor:pointer}
 .chip.placed::after{content:"×";color:var(--muted);font-weight:700;margin-left:2px}
@@ -172,37 +176,67 @@ small{font-size:.85rem;color:var(--muted)}
     <div class="content">
 
       <details open>
-        <summary>📊 The Four Statistical Tests</summary>
+        <summary>📊 Statistical Tests</summary>
         <dl style="margin-top:8px">
-          <dt style="color:#C0392B">T-Test <small>(parametric)</small></dt>
-          <dd>Compares <b>means of two groups</b> when the dependent variable is normally distributed. One-sample compares to a number; two-sample compares two groups.
-            <div class="cues">
-              <span>"compare means"</span><span>"two groups"</span><span>"placebo vs drug"</span><span>"normally distributed"</span><span>"significant difference"</span>
+
+          <dt style="color:#C0392B">T-Tests <small>(parametric · continuous data · normally distributed)</small></dt>
+          <dd>All t-tests compare <b>means</b>. The subtype depends on <b>what you're comparing to what</b>:
+            <div style="margin-top:8px;padding-left:10px;border-left:2px solid #C0392B">
+              <div><b>One-sample</b> — one group's mean vs a single fixed number.
+                <div class="cues"><span>"mean vs target"</span><span>"vs last year's average"</span><span>"vs spec"</span></div>
+              </div>
+              <div style="margin-top:8px"><b>Two-sample (independent)</b> — two DIFFERENT groups compared.
+                <div class="cues"><span>"drug vs placebo"</span><span>"Group A vs Group B"</span><span>"different subjects"</span></div>
+              </div>
+              <div style="margin-top:8px"><b>Paired</b> — SAME subjects measured twice (or matched pairs).
+                <div class="cues"><span>"before/after"</span><span>"pretest/posttest"</span><span>"same people"</span></div>
+              </div>
             </div>
           </dd>
 
-          <dt style="color:#8E44AD">Chi-Square <small>(non-parametric · categorical)</small></dt>
-          <dd>Tests <b>categorical variables</b> by comparing expected vs actual counts. <b>Test of independence</b> = relationship between variables. <b>Goodness of fit</b> = distribution against expectation.
-            <div class="cues">
-              <span>"categorical"</span><span>"pass/fail"</span><span>"survey responses"</span><span>"race/gender/education"</span><span>"expected vs actual"</span><span>"goodness of fit"</span>
+          <dt style="color:#8E44AD;margin-top:12px">Chi-Square <small>(non-parametric · categorical data)</small></dt>
+          <dd>Compares expected vs actual <b>counts</b> in categorical data. No normality assumption.
+            <div style="margin-top:8px;padding-left:10px;border-left:2px solid #8E44AD">
+              <div><b>Test of Independence</b> — 2 categorical variables, are they related?
+                <div class="cues"><span>"preparedness × pass/fail"</span><span>"party × support"</span><span>"cross-tab"</span></div>
+              </div>
+              <div style="margin-top:8px"><b>Goodness of Fit</b> — 1 categorical variable vs an expected distribution.
+                <div class="cues"><span>"15% fail, 85% pass expected"</span><span>"vs historical split"</span><span>"is the die fair?"</span></div>
+              </div>
             </div>
           </dd>
 
-          <dt style="color:#1F6FB2">Simple Linear Regression <small>(parametric)</small></dt>
-          <dd><b>One independent (predictor) and one dependent variable</b>. Produces a best-fit line. Estimates / predicts a value.
+          <dt style="color:#D35400;margin-top:12px">ANOVA <small>(parametric · Analysis of Variance)</small></dt>
+          <dd>Compares means across <b>3 or more groups</b>. When you'd want a t-test but have more than 2 groups, reach for ANOVA.
             <div class="cues">
-              <span>"predict"</span><span>"one predictor"</span><span>"best-fit line"</span><span>"scatter plot trend line"</span><span>"strongest predictor"</span>
+              <span>"three or more groups"</span><span>"5 departments"</span><span>"4 dosage levels"</span><span>"any of the groups differ?"</span>
             </div>
           </dd>
 
-          <dt style="color:#2E8B57">Correlation <small>(Pearson's r · parametric)</small></dt>
+          <dt style="color:#1F6FB2;margin-top:12px">Simple Linear Regression <small>(parametric)</small></dt>
+          <dd><b>One independent (predictor) and one dependent variable</b>. Produces a best-fit line. Predicts / estimates a value.
+            <div class="cues">
+              <span>"predict"</span><span>"one predictor"</span><span>"best-fit line"</span><span>"scatter plot trend line"</span>
+            </div>
+          </dd>
+
+          <dt style="color:#2E8B57;margin-top:12px">Correlation <small>(Pearson's r · parametric)</small></dt>
           <dd>Measures the <b>strength of relationship</b> between two equal variables. r is between −1 and 1. <b>Does NOT prove causation.</b>
             <div class="cues">
               <span>"strength of relationship"</span><span>"r value"</span><span>"one changes, the other changes"</span><span>"not causation"</span>
             </div>
           </dd>
         </dl>
-        <div class="hint" style="margin-top:10px"><b>The key fork:</b> Continuous + comparing means → <b style="color:#C0392B">T-test</b>. Categorical → <b style="color:#8E44AD">Chi-square</b>. Predict a value from one variable → <b style="color:#1F6FB2">Regression</b>. Just measure the link without predicting → <b style="color:#2E8B57">Correlation</b>.</div>
+
+        <div class="hint" style="margin-top:12px"><b>The main fork:</b><br>
+          • <b style="color:#C0392B">T-Test</b>: continuous means, 2 groups (or 1 vs a number)<br>
+          • <b style="color:#D35400">ANOVA</b>: continuous means, 3+ groups<br>
+          • <b style="color:#8E44AD">Chi-Square</b>: categorical variables (counts, not measurements)<br>
+          • <b style="color:#1F6FB2">Regression</b>: predict a value from a predictor<br>
+          • <b style="color:#2E8B57">Correlation</b>: just measure the link, no prediction, no causation
+        </div>
+
+        <div class="hint" style="margin-top:8px;border-left-color:#7f8c8d"><b>Non-parametric alternatives (M11 mention):</b> Random forest and k-nearest neighbors (k-NN) are named in Module 11 as examples of techniques suitable for data that isn't normally distributed. They're ML methods, not classical statistical tests, and Module 12 doesn't drill them — but you may see them referenced elsewhere.</div>
       </details>
 
       <details>
@@ -240,6 +274,95 @@ small{font-size:.85rem;color:var(--muted)}
         </dl>
       </details>
 
+      <details>
+        <summary>🧮 Formulas Reference</summary>
+
+        <div style="margin-top:10px;font-size:.86rem;color:var(--muted)"><b style="color:var(--accent)">Descriptive statistics (Module 11)</b></div>
+
+        <dl style="margin-top:8px">
+          <dt>Mean (Average)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">x̄ = Σx / n</code><br>
+            <small>Sum of all values divided by count. Excel: <code>=AVERAGE()</code>. Skewed by outliers.</small>
+          </dd>
+
+          <dt>Range</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">range = max − min</code><br>
+            <small>Highest value minus lowest. Simplest measure of dispersion.</small>
+          </dd>
+
+          <dt>Variance (sample)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">s² = Σ(x − x̄)² / (n − 1)</code><br>
+            <small>Average squared distance from the mean. Uses (n−1) for sample data (Bessel's correction).</small>
+          </dd>
+
+          <dt>Standard Deviation</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">σ = √variance</code><br>
+            <small>Square root of variance — brings units back to original scale. Excel: <code>=STDEV()</code>.</small>
+          </dd>
+
+          <dt>Z-score</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">z = (x − μ) / σ</code><br>
+            <small>How many standard deviations a value is from the mean. z beyond ±3 = outlier candidate. Excel: <code>=STANDARDIZE()</code>.</small>
+          </dd>
+
+          <dt>Percentage Change</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">((New − Old) / |Old|) × 100</code><br>
+            <small>Positive = growth, negative = decline. Uses absolute value in denominator to handle negatives correctly.</small>
+          </dd>
+        </dl>
+
+        <div style="margin-top:14px;font-size:.86rem;color:var(--muted)"><b style="color:var(--accent)">Inferential statistics (Module 12)</b></div>
+
+        <dl style="margin-top:8px">
+          <dt>Confidence Interval Bounds</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">CI = mean ± CONFIDENCE result</code><br>
+            <small>Excel's <code>=CONFIDENCE(alpha, std_dev, size)</code> returns a margin. Add/subtract from mean for upper/lower bound.</small>
+          </dd>
+
+          <dt>Alpha ↔ Confidence Level</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">α = 1 − confidence level</code><br>
+            <small>95% CI → α = 0.05; 99% CI → α = 0.01; 90% CI → α = 0.10.</small>
+          </dd>
+
+          <dt>Chi-Square Statistic (χ²)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">χ² = Σ [(O − E)² / E]</code><br>
+            <small>For every cell: (Observed − Expected) squared, divided by Expected. Sum across all cells. Larger χ² = bigger deviation from expectation.</small>
+          </dd>
+
+          <dt>One-Sample t-statistic</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">t = (x̄ − μ₀) / (s / √n)</code><br>
+            <small>Sample mean minus hypothesized value, divided by the standard error of the mean. μ₀ is the number you're comparing against.</small>
+          </dd>
+
+          <dt>Two-Sample t-statistic (simplified)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">t = (x̄₁ − x̄₂) / √(s₁²/n₁ + s₂²/n₂)</code><br>
+            <small>Difference between group means, scaled by the combined standard error. Larger |t| = more evidence the means differ.</small>
+          </dd>
+
+          <dt>Paired t-statistic</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">t = d̄ / (s_d / √n)</code><br>
+            <small>d̄ is the mean of the paired differences (after − before). Because each subject is its own control, variability is usually smaller than a two-sample t-test on the same data.</small>
+          </dd>
+
+          <dt>Pearson's Correlation Coefficient (r)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px;font-size:.82rem">r = Σ((x − x̄)(y − ȳ)) / √(Σ(x − x̄)² · Σ(y − ȳ)²)</code><br>
+            <small>Value between −1 and 1. Measures strength AND direction of a linear relationship. Sign matches the slope of the trend line.</small>
+          </dd>
+
+          <dt>Coefficient of Determination (R²)</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">R² = r × r</code><br>
+            <small>Multiply by 100% to read as "percent of variability in the dependent variable explained by the independent variable."</small>
+          </dd>
+
+          <dt>Simple Linear Regression Line</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">ŷ = b₀ + b₁x</code><br>
+            <small>b₀ = intercept (where line crosses the y-axis), b₁ = slope (how much ŷ changes per one-unit increase in x). Fit by least squares.</small>
+          </dd>
+        </dl>
+
+        <div class="hint" style="margin-top:10px"><b>Exam reality:</b> The DA0-002 rarely asks you to calculate these by hand. It asks you to <b>recognize what a formula returns</b>, <b>interpret</b> a result (a p-value, an r, an R²), or <b>pick the right function name</b> (AVERAGE, STDEV, STANDARDIZE, CONFIDENCE). Memorize the shape and the meaning, not the arithmetic.</div>
+      </details>
+
       <p class="muted" style="margin-top:12px;font-size:.85rem">Shortcuts: <span class="kbd">N</span> new set · <span class="kbd">Enter</span> check answers · <span class="kbd">R</span> reset.</p>
     </div>
   </aside>
@@ -253,51 +376,99 @@ small{font-size:.85rem;color:var(--muted)}
    ===================================================== */
 
 const TESTS = {
-  ttest:       { label:"T-Test",                color:"#C0392B" },
-  chi:         { label:"Chi-Square",            color:"#8E44AD" },
-  regression:  { label:"Simple Linear Regression", color:"#1F6FB2" },
-  correlation: { label:"Correlation",           color:"#2E8B57" }
+  ttest_one:   { label:"T-Test",      sub:"One-sample",                 color:"#C0392B" },
+  ttest_two:   { label:"T-Test",      sub:"Two-sample (independent)",   color:"#C0392B" },
+  ttest_paired:{ label:"T-Test",      sub:"Paired",                     color:"#C0392B" },
+  chi_ind:     { label:"Chi-Square",  sub:"Test of Independence",       color:"#8E44AD" },
+  chi_gof:     { label:"Chi-Square",  sub:"Goodness of Fit",            color:"#8E44AD" },
+  anova:       { label:"ANOVA",                                          color:"#D35400" },
+  regression:  { label:"Simple Linear Regression",                       color:"#1F6FB2" },
+  correlation: { label:"Correlation",                                    color:"#2E8B57" }
 };
 
 const TEST_SCENARIOS = [
-  // T-TEST scenarios
-  { text:"A pharmaceutical company runs a drug trial where one group receives the actual medication and another receives a placebo. The team wants to know whether the average recovery time differs significantly between the two groups.",
-    answer:"ttest", clues:["two groups","average / mean","drug vs placebo","significant difference"],
-    why:"Two groups + comparing means of a normally distributed dependent variable (recovery days). That's the textbook two-sample t-test scenario." },
+  // ONE-SAMPLE T-TEST — compare sample mean to a fixed value
+  { text:"A subscription service wants to know if this year's subscribers' average monthly spend is higher than last year's annual average of $42.50.",
+    answer:"ttest_one", clues:["sample mean vs fixed number","one group","normally distributed"],
+    why:"The textbook's exact example: comparing a sample mean against a single known number (last year's average) = one-sample t-test." },
 
-  { text:"A subscription service wants to know if the average monthly spend of this year's subscribers is higher than last year's annual average of $42.50.",
-    answer:"ttest", clues:["mean to a number","one sample"],
-    why:"Comparing a sample mean against a single fixed number is the classic one-sample t-test from the textbook." },
+  { text:"A manufacturer's spec calls for a target widget weight of 100 grams. Quality inspects 30 widgets and wants to know whether the sample's mean weight differs significantly from 100g.",
+    answer:"ttest_one", clues:["sample mean vs target","one group","fixed target"],
+    why:"Only one group of measurements being compared to a single known target value → one-sample t-test." },
 
-  { text:"Classroom 105 received five extra study hours; Classroom 106 did not. An analyst wants to determine whether the extra hours produced a statistically significant difference in test score means.",
-    answer:"ttest", clues:["two groups","means","intervention"],
-    why:"Two independent groups with a continuous, normally-distributed dependent variable (test scores). Textbook two-sample t-test." },
+  { text:"The city's stated average commute time is 27 minutes. A commuter tracks her own drive times for a month and wants to know if her mean differs significantly from 27.",
+    answer:"ttest_one", clues:["one sample","compare to fixed number"],
+    why:"One sample (her drives) compared to a single known value (27 minutes) = one-sample t-test." },
 
-  { text:"A factory measures average widget weight on Line A versus Line B. Weights are normally distributed. Management wants to know if the lines produce significantly different mean weights.",
-    answer:"ttest", clues:["two groups","mean weight","normally distributed"],
-    why:"Compare means between two groups with normally-distributed continuous data → t-test." },
+  // TWO-SAMPLE (INDEPENDENT) T-TEST — compare means of two different groups
+  { text:"A pharmaceutical company runs a drug trial. One group of patients receives the actual medication, and a completely different group receives placebo. The team wants to know whether average recovery time differs significantly between the two groups.",
+    answer:"ttest_two", clues:["two independent groups","different subjects","means"],
+    why:"Two independent groups (different people in each) compared on a continuous outcome → two-sample independent t-test. Textbook drug trial example." },
 
-  // CHI-SQUARE scenarios
-  { text:"An analyst surveys 100 students. Each is asked to rate themselves as Very Prepared, Somewhat Prepared, or Not Prepared. The analyst wants to know whether preparedness category is related to whether they passed or failed the exam.",
-    answer:"chi", clues:["categorical","pass/fail","relationship between categories"],
-    why:"Both variables are categorical (preparedness level and pass/fail). Chi-square test of independence — verbatim from the PDF's Table 20 example." },
+  { text:"Classroom 105 received five extra study hours; Classroom 106 (different students) did not. An analyst wants to determine whether the extra hours produced a significant difference in mean test scores between the two classrooms.",
+    answer:"ttest_two", clues:["two different groups","independent","means"],
+    why:"Two independent classrooms (different students in each). Textbook two-sample independent t-test." },
+
+  { text:"An analyst compares the mean widget weight from Line A (staffed by one team) versus Line B (staffed by a completely different team). Are the two lines producing significantly different average weights?",
+    answer:"ttest_two", clues:["two independent groups","normally distributed","means"],
+    why:"Two independent groups with continuous, normally-distributed data → two-sample independent t-test." },
+
+  // PAIRED T-TEST — same subjects measured twice
+  { text:"Twenty hypertension patients have their blood pressure measured before starting a new medication and again after 30 days on it. Was there a significant change in the same patients' blood pressure?",
+    answer:"ttest_paired", clues:["same subjects","before and after","paired measurements"],
+    why:"The SAME patients are measured twice (before/after). Paired measurements → paired t-test, not independent t-test." },
+
+  { text:"The same group of students takes a pretest at the start of the semester and a posttest at the end. Analyst wants to know if there's a significant improvement in each student's score.",
+    answer:"ttest_paired", clues:["same students","pre and post","paired"],
+    why:"Same students measured twice — pretest and posttest are matched to each individual. That's a paired (dependent) t-test." },
+
+  { text:"Employees rated job satisfaction before a workplace policy change and again three months after the change was implemented. Compare the same employees' before/after ratings.",
+    answer:"ttest_paired", clues:["same subjects","before/after","paired"],
+    why:"Same employees measured before and after. The two data points are paired to each employee → paired t-test." },
+
+  // CHI-SQUARE TEST OF INDEPENDENCE — two categorical variables, relationship?
+  { text:"An analyst surveys 100 students. Each rates themselves as Very Prepared, Somewhat Prepared, or Not Prepared. She wants to know whether preparedness category is related to whether they passed or failed the exam.",
+    answer:"chi_ind", clues:["two categorical variables","relationship","preparedness × pass/fail"],
+    why:"Two categorical variables (preparedness level × pass/fail) testing for a relationship. The PDF's Table 20 example — chi-square test of independence." },
 
   { text:"A pollster wants to know whether voter party affiliation (Democrat, Republican, Independent) is related to support for a ballot measure (Support, Oppose, Undecided).",
-    answer:"chi", clues:["categorical","relationship","no means involved"],
-    why:"Two categorical variables, looking for a relationship between them → chi-square test of independence." },
+    answer:"chi_ind", clues:["two categorical variables","relationship"],
+    why:"Two categorical variables tested for a relationship → chi-square test of independence." },
 
-  { text:"A researcher hypothesized that 15% of students would fail an exam and 85% would pass. After the exam, she wants to compare the actual pass/fail counts to this expected distribution.",
-    answer:"chi", clues:["expected vs actual","single variable","hypothesized distribution"],
-    why:"Comparing observed counts to a single hypothesized distribution → chi-square goodness of fit (the second chi-square variant from the PDF)." },
+  { text:"A marketing team wants to know if preferred communication channel (Email, SMS, App, Social) is related to customer age bracket (18–29, 30–49, 50+).",
+    answer:"chi_ind", clues:["two categorical variables","survey responses","cross-tabulation"],
+    why:"Two categorical variables, looking for a relationship → chi-square test of independence." },
 
-  { text:"A marketing team surveyed customers about preferred channel (Email, SMS, App, Social). They want to know if channel preference differs by age bracket (18–29, 30–49, 50+).",
-    answer:"chi", clues:["two categorical variables","survey responses","race/age/gender style"],
-    why:"Both variables are categorical (channel, age bracket). Chi-square test of independence is built for exactly this." },
+  // CHI-SQUARE GOODNESS OF FIT — one categorical variable vs expected distribution
+  { text:"A researcher hypothesized that 15% of students would fail an exam and 85% would pass. She wants to compare the actual pass/fail counts to that expected 15/85 split.",
+    answer:"chi_gof", clues:["one variable","hypothesized distribution","expected vs actual"],
+    why:"One categorical variable (pass/fail) compared to a single hypothesized distribution (15/85) → chi-square goodness of fit. Direct from the PDF." },
 
-  // REGRESSION scenarios
-  { text:"School administrators want to know whether days present predicts a student's eighth-grade test score, and if so, by how much. They plan to plot the data with a best-fit line.",
+  { text:"Historically, sales split 40% online, 35% in-store, 25% phone. An analyst wants to test whether this quarter's actual sales channel counts still match that historical distribution.",
+    answer:"chi_gof", clues:["one categorical variable","expected distribution","match / fit"],
+    why:"One categorical variable (channel) tested against a single expected distribution → chi-square goodness of fit." },
+
+  { text:"A quality inspector wants to test whether a six-sided die is fair by rolling it 600 times and checking whether each face appears about 100 times as expected.",
+    answer:"chi_gof", clues:["one variable","uniform expected distribution"],
+    why:"One categorical variable (die face) tested against a uniform expected distribution → chi-square goodness of fit." },
+
+  // ANOVA — 3 or more groups
+  { text:"A researcher wants to compare mean test scores across THREE different teaching methods to see if any method's mean differs from the others.",
+    answer:"anova", clues:["three or more groups","compare means","continuous"],
+    why:"Three groups compared on means — t-test only handles two groups, so use ANOVA when there are 3+ groups." },
+
+  { text:"HR wants to compare average salaries across FIVE departments to test whether any department differs significantly from the others.",
+    answer:"anova", clues:["5 groups","compare means","one factor"],
+    why:"Comparing means across 5 groups requires ANOVA. A t-test is limited to 2 groups." },
+
+  { text:"A clinical trial compares mean recovery time across FOUR drug dosage groups (10mg, 20mg, 30mg, 40mg — each with different patients).",
+    answer:"anova", clues:["four groups","different subjects","compare means"],
+    why:"Four independent groups compared on a continuous mean outcome → ANOVA. Not a t-test (too many groups), not chi-square (not categorical outcome)." },
+
+  // SIMPLE LINEAR REGRESSION
+  { text:"School administrators want to know whether days present predicts a student's eighth-grade test score, and by how much. They plan to plot the data with a best-fit line.",
     answer:"regression", clues:["one predictor","predict","best-fit line"],
-    why:"One independent variable (days present) predicting one dependent variable (test score), visualized as a trend line. Textbook simple linear regression example." },
+    why:"One independent variable (days present) predicting one dependent variable (test score), visualized as a trend line. Textbook simple linear regression." },
 
   { text:"A retailer wants to estimate how each additional $1,000 of advertising spend changes weekly sales revenue.",
     answer:"regression", clues:["one predictor","estimate impact","predict change"],
@@ -305,16 +476,16 @@ const TEST_SCENARIOS = [
 
   { text:"A real estate analyst wants to build a model where square footage predicts home sale price, producing a line of best fit on a scatter plot.",
     answer:"regression", clues:["one predictor","predict","scatter with line"],
-    why:"One predictor variable, one outcome variable, predictive line-fit → simple linear regression." },
+    why:"One predictor, one outcome, predictive line-fit → simple linear regression." },
 
-  // CORRELATION scenarios
+  // CORRELATION
   { text:"Almost all eighth-graders watched a popular movie the weekend before their test. The analyst wants to measure the strength of the relationship between watching the movie and test scores — but is careful not to claim the movie caused the higher scores.",
     answer:"correlation", clues:["strength of relationship","NOT causation","just association"],
-    why:"The textbook's exact warning: 'correlation doesn't mean causation.' She wants the r value, not a predictive model. Correlation, not regression." },
+    why:"The textbook's exact warning: 'correlation doesn't mean causation.' She wants the r value, not a predictive model → correlation, not regression." },
 
   { text:"An analyst wants to know whether hours of social media use and reported sleep quality move together — when one changes, does the other? She does not want to predict one from the other; she only wants to know the strength of the link.",
     answer:"correlation", clues:["move together","r value","not predicting","just strength"],
-    why:"Pure association — no predictor/predicted distinction, no causation claim. Correlation (Pearson's r) is the right tool." },
+    why:"Pure association — no predictor/predicted distinction, no causation claim → correlation (Pearson's r)." },
 
   { text:"A coach computes an r value of 0.82 between practice hours and game performance, but does not claim that practice causes the better performance.",
     answer:"correlation", clues:["r value","no causation","strength"],
@@ -370,30 +541,42 @@ const SAMPLING_SCENARIOS = [
 ];
 
 const CUE_WORDS = [
-  // statistical tests cues
-  { phrase:"Compare the average recovery days between two groups", answer:"T-Test", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Two groups + means of normally-distributed data = t-test." },
-  { phrase:"Compare actual pass/fail counts to expected counts", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Categorical data + expected vs actual = chi-square (goodness of fit)." },
-  { phrase:"Predict test score from days present", answer:"Simple Linear Regression", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"One predictor → one outcome = simple linear regression." },
-  { phrase:"Measure strength of relationship without claiming cause", answer:"Correlation", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Strength of association, no causation = correlation." },
-  { phrase:"r = 0.82", answer:"Correlation", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"r values are produced by Pearson's correlation analysis." },
-  { phrase:"Test of independence between gender and product preference", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Two categorical variables, testing for relationship = chi-square test of independence." },
-  { phrase:"Best-fit line on a scatter plot", answer:"Simple Linear Regression", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Best-fit line = linear regression. (A scatter plot alone is just a visualization; the line + fit analysis is regression.)" },
-  { phrase:"Goodness of fit", answer:"Chi-Square", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"Goodness of fit is one of the two chi-square variants — tests whether observed data fits a hypothesized distribution." },
-  { phrase:"One-sample comparison of mean to a target number", answer:"T-Test", group:"test", choices:["T-Test","Chi-Square","Simple Linear Regression","Correlation"], why:"One-sample t-test compares a sample mean to a fixed value." },
+  // T-TEST SUBTYPE CUES
+  { phrase:"Compare a sample mean to a single fixed target number", answer:"One-sample t-test", group:"test", choices:["One-sample t-test","Two-sample t-test","Paired t-test","ANOVA"], why:"One-sample t-test compares a sample mean against a single known value (e.g., last year's average, a spec target)." },
+  { phrase:"Two different groups of subjects compared on their means", answer:"Two-sample t-test", group:"test", choices:["One-sample t-test","Two-sample t-test","Paired t-test","ANOVA"], why:"Two independent groups (different people in each) = two-sample independent t-test." },
+  { phrase:"Same subjects measured twice — before and after", answer:"Paired t-test", group:"test", choices:["One-sample t-test","Two-sample t-test","Paired t-test","ANOVA"], why:"When the SAME subjects are measured before/after, or matched pairs, use a paired t-test. Each subject is its own control." },
+  { phrase:"Drug group vs placebo group (different patients in each)", answer:"Two-sample t-test", group:"test", choices:["One-sample t-test","Two-sample t-test","Paired t-test","ANOVA"], why:"Different people in each group = independent (two-sample) t-test." },
+  { phrase:"Pretest vs posttest scores from the same students", answer:"Paired t-test", group:"test", choices:["One-sample t-test","Two-sample t-test","Paired t-test","ANOVA"], why:"Same students measured twice = paired t-test. Not two-sample, because the two measurements are linked to each individual." },
 
-  // sampling cues
+  // ANOVA
+  { phrase:"Compare means across THREE or more groups", answer:"ANOVA", group:"test", choices:["Two-sample t-test","ANOVA","Chi-Square","Correlation"], why:"T-test only handles 2 groups. Once you have 3 or more groups, use ANOVA (Analysis of Variance)." },
+  { phrase:"Comparing average recovery times across four drug doses", answer:"ANOVA", group:"test", choices:["Two-sample t-test","Paired t-test","ANOVA","Regression"], why:"Four groups = more than two. Use ANOVA to compare means across 3+ groups." },
+
+  // CHI-SQUARE SUBTYPE CUES
+  { phrase:"Two categorical variables — is there a relationship?", answer:"Chi-square Test of Independence", group:"test", choices:["Chi-square Test of Independence","Chi-square Goodness of Fit","Correlation","Two-sample t-test"], why:"Testing a relationship between two categorical variables = chi-square test of independence." },
+  { phrase:"One categorical variable vs a hypothesized distribution", answer:"Chi-square Goodness of Fit", group:"test", choices:["Chi-square Test of Independence","Chi-square Goodness of Fit","One-sample t-test","Correlation"], why:"Testing whether observed counts match an expected distribution = chi-square goodness of fit." },
+  { phrase:"Preparedness rating × pass/fail cross-tabulation", answer:"Chi-square Test of Independence", group:"test", choices:["Chi-square Test of Independence","Chi-square Goodness of Fit","ANOVA","Regression"], why:"Two categorical variables cross-tabbed = chi-square test of independence. Textbook Table 20 example." },
+  { phrase:"Testing if a die is fair (each face expected 1/6)", answer:"Chi-square Goodness of Fit", group:"test", choices:["Chi-square Test of Independence","Chi-square Goodness of Fit","One-sample t-test","ANOVA"], why:"One categorical variable (die face) vs a uniform expected distribution = goodness of fit." },
+
+  // REGRESSION & CORRELATION
+  { phrase:"Predict test score from days present", answer:"Simple Linear Regression", group:"test", choices:["Simple Linear Regression","Correlation","Two-sample t-test","Chi-Square"], why:"One predictor → one outcome, with a best-fit line = simple linear regression." },
+  { phrase:"Measure strength of relationship without claiming cause", answer:"Correlation", group:"test", choices:["Simple Linear Regression","Correlation","ANOVA","Chi-Square"], why:"Strength of association without predicting or claiming causation = correlation." },
+  { phrase:"r = 0.82", answer:"Correlation", group:"test", choices:["Simple Linear Regression","Correlation","Chi-Square","ANOVA"], why:"r values are produced by Pearson's correlation analysis." },
+  { phrase:"Best-fit line on a scatter plot", answer:"Simple Linear Regression", group:"test", choices:["Simple Linear Regression","Correlation","ANOVA","Chi-Square"], why:"Best-fit line = linear regression. A scatter plot alone is visualization; the line + fit analysis is regression." },
+
+  // SAMPLING CUES
   { phrase:"Every nth element after a random start", answer:"Systematic", group:"sampling", choices:["Simple Random","Stratified","Systematic","Cluster"], why:"Verbatim definition of systematic sampling." },
   { phrase:"Each member has equal chance, independent selection", answer:"Simple Random", group:"sampling", choices:["Simple Random","Stratified","Systematic","Convenience"], why:"Equal chance + independence = simple random." },
-  { phrase:"Imbalanced dataset, ensure all subgroups represented", answer:"Stratified", group:"sampling", choices:["Simple Random","Stratified","Cluster","Multi-stage"], why:"Stratified is explicitly defined as the method for imbalanced datasets to ensure representation." },
+  { phrase:"Imbalanced dataset, ensure all subgroups represented", answer:"Stratified", group:"sampling", choices:["Simple Random","Stratified","Cluster","Multi-stage"], why:"Stratified is defined as the method for imbalanced datasets to ensure representation." },
   { phrase:"All members of randomly selected groups", answer:"Cluster", group:"sampling", choices:["Stratified","Systematic","Cluster","Multi-stage"], why:"Cluster sampling: random clusters chosen, ALL members within them are surveyed." },
-  { phrase:"Asking initial subjects to identify others", answer:"Snowball", group:"sampling", choices:["Convenience","Snowball","Cluster","Stratified"], why:"Snowball sampling grows the sample via referrals from initial members." },
+  { phrase:"Asking initial subjects to identify others", answer:"Snowball", group:"sampling", choices:["Convenience","Snowball","Cluster","Stratified"], why:"Snowball sampling grows via referrals from initial members." },
   { phrase:"Easiest, fastest, whoever's nearby", answer:"Convenience", group:"sampling", choices:["Convenience","Snowball","Simple Random","Systematic"], why:"Convenience sampling = most easily available, fast but not representative." },
   { phrase:"Combines multiple sampling methods at different stages", answer:"Multi-stage", group:"sampling", choices:["Stratified","Cluster","Multi-stage","Systematic"], why:"Multi-stage explicitly combines methods (e.g., stratified, then random within each stratum)." },
 
-  // parametric vs non-parametric
-  { phrase:"Used only when data is normally distributed", answer:"Parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","Descriptive statistics","Confidence intervals"], why:"Parametric tests (t-test, regression, Pearson correlation) assume normal distribution. Source: Module 11B." },
-  { phrase:"Required when data is skewed", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Regression"], why:"Non-parametric tests are used when data doesn't follow normal distribution." },
-  { phrase:"Categorical data — no normality assumption", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Simple Linear Regression"], why:"Chi-square is the textbook test for categorical data. It is non-parametric — no distribution assumption is required." }
+  // PARAMETRIC VS NON-PARAMETRIC
+  { phrase:"Used only when data is normally distributed", answer:"Parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","Descriptive statistics","Confidence intervals"], why:"Parametric tests (t-test, ANOVA, regression, Pearson correlation) assume normal distribution. Source: Module 11B." },
+  { phrase:"Required when data is skewed", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Regression"], why:"Non-parametric tests are used when data doesn't follow a normal distribution." },
+  { phrase:"Categorical data — no normality assumption needed", answer:"Non-parametric tests", group:"distribution", choices:["Parametric tests","Non-parametric tests","T-test","Simple Linear Regression"], why:"Chi-square works on categorical data and is non-parametric — no distribution assumption is required." }
 ];
 
 const ERROR_SCENARIOS = [
@@ -546,7 +729,9 @@ function renderDragMatch(kind){
   // collect option keys that are present + a couple distractors
   const presentKeys = [...new Set(picks.map(p => p.answer))];
   const allKeys = Object.keys(optionMap);
-  const distractors = shuffle(allKeys.filter(k => !presentKeys.includes(k))).slice(0, Math.max(0, Math.min(3, allKeys.length - presentKeys.length)));
+  // for test mode use more distractors since there are 8 possible chips
+  const maxDistractors = isTest ? 4 : 3;
+  const distractors = shuffle(allKeys.filter(k => !presentKeys.includes(k))).slice(0, Math.max(0, Math.min(maxDistractors, allKeys.length - presentKeys.length)));
   // chips: one per scenario plus 1-2 distractors. To make it harder, allow duplicates if multiple scenarios share an answer.
   const chipKeys = shuffle([...picks.map(p => p.answer), ...distractors]);
 
@@ -560,7 +745,14 @@ function renderDragMatch(kind){
     <div class="hint">${promptText}</div>
     <p class="muted" style="margin:10px 0 6px"><b>Answer bank</b> — drag from here:</p>
     <div class="bank" id="bank">
-      ${chipKeys.map((k,i) => `<div class="chip" draggable="true" data-key="${k}" data-id="chip${i}" style="border-left:4px solid ${isTest ? optionMap[k].color : 'var(--accent)'}">${optionMap[k].label}</div>`).join('')}
+      ${chipKeys.map((k,i) => {
+        const opt = optionMap[k];
+        const color = isTest ? opt.color : 'var(--accent)';
+        const hasSub = !!opt.sub;
+        const subHtml = hasSub ? `<span class="sub">(${opt.sub})</span>` : '';
+        const cls = hasSub ? 'chip has-sub' : 'chip';
+        return `<div class="${cls}" draggable="true" data-key="${k}" data-id="chip${i}" style="border-left:4px solid ${color}"><span class="main">${opt.label}</span>${subHtml}</div>`;
+      }).join('')}
     </div>
     <div class="scenarios-stack">
       ${picks.map((s,i) => `
@@ -695,10 +887,9 @@ function wireDragDrop(picks){
 }
 
 function labelFor(key){
-  return (TESTS[key] && TESTS[key].label)
-      || (SAMPLING_METHODS[key] && SAMPLING_METHODS[key].label)
-      || (ERROR_OPTIONS[key] && ERROR_OPTIONS[key].label)
-      || key;
+  const opt = TESTS[key] || SAMPLING_METHODS[key] || ERROR_OPTIONS[key];
+  if (!opt) return key;
+  return opt.sub ? `${opt.label} (${opt.sub})` : opt.label;
 }
 
 /* ----- CUE WORDS (flashcard MCQ) ----- */
