@@ -309,6 +309,11 @@ small{font-size:.85rem;color:var(--muted)}
           <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">((New − Old) / |Old|) × 100</code><br>
             <small>Positive = growth, negative = decline. Uses absolute value in denominator to handle negatives correctly.</small>
           </dd>
+
+          <dt>Percentage Difference</dt>
+          <dd><code style="background:var(--chip);padding:3px 8px;border-radius:6px">|A − B| / ((A + B) / 2) × 100</code><br>
+            <small>Non-directional — neither value is a "baseline." Textbook example: 11 vs 9 students → |11−9| / 10 × 100 = 20%. Use for comparing two data points/sets side-by-side; use Percentage Change instead when there's a clear before/after or old/new.</small>
+          </dd>
         </dl>
 
         <div style="margin-top:14px;font-size:.86rem;color:var(--muted)"><b style="color:var(--accent)">Inferential statistics (Module 12)</b></div>
