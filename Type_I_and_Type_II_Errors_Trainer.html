@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D492 — Type I &amp; Type II Errors Trainer</title>
+<style>
+:root{
+  --accent:#1F6FB2;
+  --accent2:#2E8B57;
+  --warn:#C0392B;
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --border:#dbe3ee;
+  --text:#0b1b2b;
+  --muted:#4b5e73;
+  --chip:#eef3f8;
+  --dash:#cfd9e3;
+  --good:#155724;
+  --goodbg:#d4edda;
+  --goodbd:#b7dfc5;
+  --bad:#7a1d1d;
+  --badbg:#f8d7da;
+  --badbd:#f1b0b7;
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
+}
+.dark{
+  --bg:#0c1015;
+  --panel:#121a23;
+  --border:#223042;
+  --text:#e8edf3;
+  --muted:#9ab0c6;
+  --chip:#172233;
+  --dash:#2a374b;
+  --good:#69db7c;
+  --goodbg:#0f1a12;
+  --goodbd:#1a3622;
+  --bad:#ff8787;
+  --badbg:#1a0f10;
+  --badbd:#3a1d20;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.45}
+header{display:flex;gap:12px;align-items:center;padding:14px 16px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;box-shadow:var(--shadow);flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.05rem,2.5vw,1.35rem);color:var(--accent)}
+h1 .sub{color:var(--muted);font-weight:500;font-size:.85em;margin-left:8px}
+main{max-width:1280px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:1024px){main{grid-template-columns:1fr 380px}}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 10px 0;font-size:1.05rem;color:var(--accent)}
+.card h3{margin:14px 0 6px 0;font-size:.95rem;color:var(--accent2)}
+button{cursor:pointer;font:inherit;background:var(--chip);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 12px;transition:transform .05s ease}
+button:hover{background:var(--dash)}
+button:active{transform:translateY(1px)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.primary:hover{background:#155a99}
+.pill{display:inline-block;background:var(--chip);border:1px solid var(--border);padding:3px 9px;border-radius:999px;font-size:.82rem;color:var(--muted)}
+.spacer{flex:1}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tab{padding:6px 12px;border-radius:8px;background:var(--chip);border:1px solid var(--border);cursor:pointer;font-size:.88rem}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode{display:none}
+.mode.active{display:block}
+.scenario{background:var(--chip);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.scenario .lead{font-size:.82rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.dropzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.dropzone{min-height:80px;border:2px dashed var(--dash);border-radius:10px;padding:10px;background:var(--panel);transition:background .15s ease,border-color .15s ease}
+.dropzone.over{background:rgba(31,111,178,.08);border-color:var(--accent)}
+.dropzone .z-title{font-weight:600;color:var(--accent);margin-bottom:6px;font-size:.9rem}
+.dropzone.z-t1 .z-title{color:#c0392b}
+.dropzone.z-t2 .z-title{color:#8e44ad}
+.dropzone.z-correct .z-title{color:var(--accent2)}
+.chipbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--chip);border:1px dashed var(--dash);border-radius:10px;min-height:60px;margin-top:12px}
+.chip{padding:7px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--border);cursor:grab;user-select:none;font-size:.88rem;transition:transform .05s ease}
+.chip:active{cursor:grabbing;transform:scale(.97)}
+.chip.placed{opacity:.9}
+.chip.correct{background:var(--goodbg);border-color:var(--goodbd);color:var(--good)}
+.chip.wrong{background:var(--badbg);border-color:var(--badbd);color:var(--bad)}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.explain{margin-top:12px;padding:12px;border-radius:10px;background:rgba(31,111,178,.06);border:1px solid var(--border);font-size:.92rem;display:none}
+.explain.show{display:block}
+.explain b{color:var(--accent)}
+.explain .row{margin:6px 0}
+.explain .said{color:#c0392b;font-weight:600}
+.explain .was{color:#2874A6;font-weight:600}
+.said-was{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.said-was .group{background:var(--chip);border:1px solid var(--border);border-radius:10px;padding:10px}
+.said-was .group h4{margin:0 0 8px 0;color:var(--accent);font-size:.92rem}
+.said-was .opts{display:flex;gap:8px}
+.said-was .opt{flex:1;padding:8px;border-radius:8px;background:var(--panel);border:1px solid var(--border);cursor:pointer;text-align:center;font-weight:600}
+.said-was .opt.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.said-was .opt.correct{background:var(--goodbg);color:var(--good);border-color:var(--goodbd)}
+.said-was .opt.wrong{background:var(--badbg);color:var(--bad);border-color:var(--badbd)}
+.err-choice{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.err-choice .opt{flex:1;min-width:120px;padding:10px;border-radius:8px;background:var(--panel);border:1px solid var(--border);cursor:pointer;text-align:center;font-weight:600}
+.err-choice .opt.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.err-choice .opt.correct{background:var(--goodbg);color:var(--good);border-color:var(--goodbd)}
+.err-choice .opt.wrong{background:var(--badbg);color:var(--bad);border-color:var(--badbd)}
+.mcq-opts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+@media(min-width:600px){.mcq-opts{grid-template-columns:1fr 1fr}}
+.mcq-opts .opt{padding:12px;border-radius:8px;background:var(--panel);border:1px solid var(--border);cursor:pointer}
+.mcq-opts .opt.sel{background:rgba(31,111,178,.12);border-color:var(--accent)}
+.mcq-opts .opt.correct{background:var(--goodbg);border-color:var(--goodbd);color:var(--good)}
+.mcq-opts .opt.wrong{background:var(--badbg);border-color:var(--badbd);color:var(--bad)}
+aside .card details{margin-bottom:10px}
+aside .card summary{cursor:pointer;font-weight:600;color:var(--accent);padding:4px 0}
+aside .card .ref-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
+aside .card .ref-table th,aside .card .ref-table td{border:1px solid var(--border);padding:6px;text-align:left;vertical-align:top}
+aside .card .ref-table th{background:var(--chip)}
+aside .card ul{margin:6px 0 6px 18px;padding:0}
+aside .card li{margin-bottom:4px;font-size:.9rem}
+.kbd{display:inline-block;padding:1px 6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;background:var(--chip);border:1px solid var(--border);border-radius:4px}
+.feedback{margin-top:10px;font-weight:600}
+.feedback.good{color:var(--good)}
+.feedback.bad{color:var(--bad)}
+.score-lg{font-size:1rem;font-weight:700;color:var(--accent)}
+.hint{font-size:.85rem;color:var(--muted);margin-top:6px}
+.matrix{width:100%;border-collapse:collapse;margin-top:6px;font-size:.86rem}
+.matrix th,.matrix td{border:1px solid var(--border);padding:6px;text-align:center}
+.matrix th{background:var(--chip)}
+.matrix .t1{background:rgba(192,57,43,.10);color:#c0392b;font-weight:600}
+.matrix .t2{background:rgba(142,68,173,.12);color:#8e44ad;font-weight:600}
+.matrix .ok{background:rgba(46,139,87,.12);color:var(--accent2);font-weight:600}
+kbd{background:var(--chip);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:ui-monospace,Menlo,monospace;font-size:.78rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>Type I &amp; Type II Errors Trainer <span class="sub">D492 · Module 12</span></h1>
+  <span class="spacer"></span>
+  <span class="pill">Score: <span id="score">0 / 0</span></span>
+  <button id="darkBtn" title="Toggle dark mode">🌙 Dark</button>
+  <button id="resetBtn" title="Reset score">Reset</button>
+</header>
+
+<main>
+  <section>
+    <div class="card">
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-mode="defs">1. Definitions</div>
+        <div class="tab" data-mode="scen">2. Scenarios → Error</div>
+        <div class="tab" data-mode="sw">3. SAID / WAS Decoder</div>
+        <div class="tab" data-mode="cue">4. Cue Words</div>
+        <div class="tab" data-mode="voc">5. Vocab Translator</div>
+        <div class="tab" data-mode="mix">6. Mixed Drill</div>
+      </div>
+
+      <!-- MODE 1: DEFINITIONS -->
+      <div class="mode active" id="mode-defs">
+        <h2>Drag each definition or symbol onto the error it belongs to.</h2>
+        <p class="hint">Some items match Type I. Some match Type II. Some are shared/neither — leave those in the bank.</p>
+        <div class="dropzones">
+          <div class="dropzone z-t1" data-zone="t1"><div class="z-title">Type I (α)</div></div>
+          <div class="dropzone z-t2" data-zone="t2"><div class="z-title">Type II (β)</div></div>
+        </div>
+        <div class="chipbank" id="defs-bank"></div>
+        <div class="controls">
+          <button class="primary" id="defs-check">Check <kbd>Enter</kbd></button>
+          <button id="defs-new">New Set <kbd>N</kbd></button>
+        </div>
+        <div class="explain" id="defs-explain"></div>
+      </div>
+
+      <!-- MODE 2: SCENARIOS -->
+      <div class="mode" id="mode-scen">
+        <h2>Drag the scenario onto the error type it represents.</h2>
+        <div class="scenario" id="scen-text"></div>
+        <div class="dropzones">
+          <div class="dropzone z-t1" data-zone="t1"><div class="z-title">Type I (False Positive)</div></div>
+          <div class="dropzone z-t2" data-zone="t2"><div class="z-title">Type II (False Negative)</div></div>
+          <div class="dropzone z-correct" data-zone="ok"><div class="z-title">Correct Decision</div></div>
+        </div>
+        <div class="chipbank" id="scen-bank"></div>
+        <div class="controls">
+          <button class="primary" id="scen-check">Check <kbd>Enter</kbd></button>
+          <button id="scen-new">New Scenario <kbd>N</kbd></button>
+        </div>
+        <div class="explain" id="scen-explain"></div>
+      </div>
+
+      <!-- MODE 3: SAID / WAS DECODER -->
+      <div class="mode" id="mode-sw">
+        <h2>Read the scenario. Decode what the test SAID and what reality WAS. Then name the error.</h2>
+        <div class="scenario" id="sw-text"></div>
+        <div class="said-was">
+          <div class="group">
+            <h4>What did the test SAY?</h4>
+            <div class="opts" data-group="said">
+              <div class="opt" data-val="yes">SAID YES<br><small>(effect / disease / threat)</small></div>
+              <div class="opt" data-val="no">SAID NO<br><small>(no effect / all clear)</small></div>
+            </div>
+          </div>
+          <div class="group">
+            <h4>What WAS reality?</h4>
+            <div class="opts" data-group="was">
+              <div class="opt" data-val="yes">WAS YES<br><small>(effect really exists)</small></div>
+              <div class="opt" data-val="no">WAS NO<br><small>(no real effect)</small></div>
+            </div>
+          </div>
+        </div>
+        <h4 style="margin-top:14px">Which error?</h4>
+        <div class="err-choice" data-group="err">
+          <div class="opt" data-val="t1">Type I<br><small>False positive</small></div>
+          <div class="opt" data-val="t2">Type II<br><small>False negative</small></div>
+          <div class="opt" data-val="ok">Correct<br><small>No error</small></div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="sw-check">Check <kbd>Enter</kbd></button>
+          <button id="sw-new">New Scenario <kbd>N</kbd></button>
+        </div>
+        <div class="explain" id="sw-explain"></div>
+      </div>
+
+      <!-- MODE 4: CUE WORDS -->
+      <div class="mode" id="mode-cue">
+        <h2>What does this phrase or concept indicate?</h2>
+        <div class="scenario" id="cue-text"></div>
+        <div class="mcq-opts" id="cue-opts"></div>
+        <div class="controls">
+          <button class="primary" id="cue-check">Check <kbd>Enter</kbd></button>
+          <button id="cue-new">New Cue <kbd>N</kbd></button>
+        </div>
+        <div class="explain" id="cue-explain"></div>
+      </div>
+
+      <!-- MODE 5: VOCAB TRANSLATOR -->
+      <div class="mode" id="mode-voc">
+        <h2>Translate the formal (CertMaster) wording. Pick SAID, WAS, then the error.</h2>
+        <div class="scenario" id="voc-text"></div>
+        <div class="said-was">
+          <div class="group">
+            <h4>Formal phrase → what did the test SAY?</h4>
+            <div class="opts" data-group="said">
+              <div class="opt" data-val="yes">SAID YES</div>
+              <div class="opt" data-val="no">SAID NO</div>
+            </div>
+          </div>
+          <div class="group">
+            <h4>Formal phrase → what WAS reality?</h4>
+            <div class="opts" data-group="was">
+              <div class="opt" data-val="yes">WAS YES</div>
+              <div class="opt" data-val="no">WAS NO</div>
+            </div>
+          </div>
+        </div>
+        <h4 style="margin-top:14px">Which error (or correct)?</h4>
+        <div class="err-choice" data-group="err">
+          <div class="opt" data-val="t1">Type I</div>
+          <div class="opt" data-val="t2">Type II</div>
+          <div class="opt" data-val="ok">Correct</div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="voc-check">Check <kbd>Enter</kbd></button>
+          <button id="voc-new">New Phrase <kbd>N</kbd></button>
+        </div>
+        <div class="explain" id="voc-explain"></div>
+      </div>
+
+      <!-- MODE 6: MIXED DRILL -->
+      <div class="mode" id="mode-mix">
+        <h2>Mixed drill — a random question from any mode.</h2>
+        <p class="hint">Hit <kbd>N</kbd> or the "New Question" button below to serve up a random challenge.</p>
+        <div id="mix-container"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="card">
+      <h2>Quick Reference</h2>
+
+      <details open>
+        <summary>The 2×2 matrix</summary>
+        <table class="matrix">
+          <tr><th></th><th>H₀ TRUE<br>(no real effect)</th><th>H₀ FALSE<br>(real effect)</th></tr>
+          <tr><td><b>Reject H₀</b><br>(SAID YES)</td><td class="t1">Type I (α)<br>False Positive</td><td class="ok">Correct ✓</td></tr>
+          <tr><td><b>Accept H₀</b><br>(SAID NO)</td><td class="ok">Correct ✓</td><td class="t2">Type II (β)<br>False Negative</td></tr>
+        </table>
+      </details>
+
+      <details open>
+        <summary>SAID / WAS shortcut</summary>
+        <ul>
+          <li><b>SAID YES, WAS NO</b> → Type I (false alarm)</li>
+          <li><b>SAID NO, WAS YES</b> → Type II (missed it)</li>
+          <li><b>SAID = WAS</b> → Correct, no error</li>
+        </ul>
+        <p style="font-size:.85rem;color:var(--muted);margin:4px 0 0 0">SAID = what the test claimed. WAS = ground truth in the scenario.</p>
+      </details>
+
+      <details>
+        <summary>Vocabulary translations</summary>
+        <table class="ref-table">
+          <tr><th>Formal phrase</th><th>Plain meaning</th></tr>
+          <tr><td>Rejected the null</td><td>SAID YES</td></tr>
+          <tr><td>Accepted / failed to reject the null</td><td>SAID NO</td></tr>
+          <tr><td>Null was true</td><td>WAS NO (no real effect)</td></tr>
+          <tr><td>Null was false</td><td>WAS YES (real effect)</td></tr>
+          <tr><td>p &lt; 0.05, significant</td><td>SAID YES</td></tr>
+          <tr><td>p ≥ 0.05, not significant</td><td>SAID NO</td></tr>
+          <tr><td>Test positive</td><td>SAID YES</td></tr>
+          <tr><td>Test negative</td><td>SAID NO</td></tr>
+          <tr><td>False positive</td><td>Type I</td></tr>
+          <tr><td>False negative</td><td>Type II</td></tr>
+          <tr><td>α (alpha)</td><td>Type I rate</td></tr>
+          <tr><td>β (beta)</td><td>Type II rate</td></tr>
+        </table>
+      </details>
+
+      <details>
+        <summary>Courtroom analogy</summary>
+        <ul>
+          <li><b>H₀:</b> "The defendant is innocent" (status quo)</li>
+          <li><b>Type I:</b> Convict an innocent person (rejected true null)</li>
+          <li><b>Type II:</b> Acquit a guilty person (accepted false null)</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Cybersecurity mapping</summary>
+        <ul>
+          <li><b>Type I / FP:</b> IDS alerts on benign traffic → alert fatigue</li>
+          <li><b>Type II / FN:</b> IDS misses real intrusion → breach</li>
+          <li>Spam filter: FP = real email flagged; FN = phish gets through</li>
+          <li>AV: FP = flags legit software; FN = lets malware run</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>How to reduce each error</summary>
+        <ul>
+          <li><b>Reduce Type II:</b> ↑ sample size (n), ↑ statistical power, better study design</li>
+          <li><b>Reduce Type I:</b> ↓ α threshold (e.g., .05 → .01), correct for multiple comparisons</li>
+          <li><b>Tradeoff:</b> Reducing one usually increases the other. You can't minimize both simultaneously.</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Which error is worse?</summary>
+        <ul>
+          <li>Depends on the domain and cost of each mistake.</li>
+          <li>US criminal law: Type I &gt; Type II (better guilty walk than innocent imprisoned)</li>
+          <li>Cancer screening: Type II &gt; Type I (better false alarm than missed diagnosis)</li>
+          <li>Airport security: usually Type II &gt; Type I</li>
+          <li>Drug approval: usually Type I &gt; Type II (don't approve ineffective/harmful drugs)</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Memory hooks</summary>
+        <ul>
+          <li>Type <b>1</b> = convict the <b>1</b>nnocent (rejected truth)</li>
+          <li>Type <b>2</b> = <b>2</b>o late to catch the guilty (missed the real one)</li>
+          <li>"False" describes what the TEST said, not reality</li>
+          <li>α before β; Type I before Type II — the α/Type I error is what we control first with the significance level</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Keyboard shortcuts</summary>
+        <ul>
+          <li><kbd>N</kbd> — new question / set</li>
+          <li><kbd>Enter</kbd> — check answer</li>
+          <li><kbd>R</kbd> — reset score</li>
+          <li><kbd>1</kbd>–<kbd>6</kbd> — switch to mode 1–6</li>
+        </ul>
+      </details>
+    </div>
+  </aside>
+</main>
+
+<script>
+/* -----------------------------
+   STATE + UTILS
+   ----------------------------- */
+const state = { score:0, total:0 };
+const $ = (s,root=document)=>root.querySelector(s);
+const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
+const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+function updateScore(){ $('#score').textContent = state.score + ' / ' + state.total; }
+function markResult(ok){ state.total++; if(ok) state.score++; updateScore(); }
+
+/* -----------------------------
+   DARK MODE
+   ----------------------------- */
+$('#darkBtn').addEventListener('click',()=>{
+  document.body.classList.toggle('dark');
+  $('#darkBtn').textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
+});
+$('#resetBtn').addEventListener('click',()=>{
+  state.score=0; state.total=0; updateScore();
+});
+
+/* -----------------------------
+   TAB SWITCHING
+   ----------------------------- */
+$$('#tabs .tab').forEach(t=>{
+  t.addEventListener('click',()=>switchMode(t.dataset.mode));
+});
+function switchMode(mode){
+  $$('#tabs .tab').forEach(t=>t.classList.toggle('active', t.dataset.mode===mode));
+  $$('.mode').forEach(m=>m.classList.toggle('active', m.id==='mode-'+mode));
+}
+
+/* =============================
+   MODE 1 — DEFINITIONS DRAG
+   ============================= */
+const DEFS = [
+  {t:'Rejecting a null hypothesis that is actually TRUE', z:'t1'},
+  {t:'Accepting a null hypothesis that is actually FALSE', z:'t2'},
+  {t:'False Positive', z:'t1'},
+  {t:'False Negative', z:'t2'},
+  {t:'α (alpha)', z:'t1'},
+  {t:'β (beta)', z:'t2'},
+  {t:'Test said YES, reality was NO', z:'t1'},
+  {t:'Test said NO, reality was YES', z:'t2'},
+  {t:'The "false alarm" error', z:'t1'},
+  {t:'The "missed it" error', z:'t2'},
+  {t:'Reduced by lowering the α significance threshold', z:'t1'},
+  {t:'Reduced by increasing sample size / statistical power', z:'t2'},
+  {t:'IDS alerts on benign traffic', z:'t1'},
+  {t:'IDS misses a real intrusion', z:'t2'},
+  {t:'Convicting an innocent defendant', z:'t1'},
+  {t:'Acquitting a guilty defendant', z:'t2'},
+  {t:'Antivirus flags a legitimate Windows update', z:'t1'},
+  {t:'Antivirus lets a real trojan through', z:'t2'},
+  {t:'Cancer screen returns "positive" for a healthy patient', z:'t1'},
+  {t:'Mammogram misses a real tumor', z:'t2'},
+];
+let defsCurrent = [];
+function newDefs(){
+  const bank = $('#defs-bank');
+  bank.innerHTML='';
+  $$('#mode-defs .dropzone').forEach(z=>{
+    z.querySelectorAll('.chip').forEach(c=>c.remove());
+  });
+  $('#defs-explain').classList.remove('show');
+  defsCurrent = shuffle(DEFS).slice(0,6);
+  defsCurrent.forEach((d,i)=>{
+    const chip = document.createElement('div');
+    chip.className='chip';
+    chip.draggable=true;
+    chip.dataset.zone=d.z;
+    chip.dataset.idx=i;
+    chip.textContent=d.t;
+    bindChip(chip);
+    bank.appendChild(chip);
+  });
+}
+function bindChip(chip){
+  chip.addEventListener('dragstart',e=>{
+    e.dataTransfer.setData('text/plain', chip.dataset.idx);
+    e.dataTransfer.setData('text/mode', 'defs');
+    chip.style.opacity='.5';
+  });
+  chip.addEventListener('dragend',()=>{ chip.style.opacity='1'; });
+  chip.addEventListener('click',()=>{
+    if(chip.parentElement && chip.parentElement.classList.contains('dropzone')){
+      $('#defs-bank').appendChild(chip);
+      chip.classList.remove('correct','wrong');
+    }
+  });
+}
+$$('#mode-defs .dropzone').forEach(z=>{
+  z.addEventListener('dragover',e=>{e.preventDefault(); z.classList.add('over');});
+  z.addEventListener('dragleave',()=>z.classList.remove('over'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault(); z.classList.remove('over');
+    const idx = e.dataTransfer.getData('text/plain');
+    const mode = e.dataTransfer.getData('text/mode');
+    if(mode!=='defs') return;
+    const chip = $(`#defs-bank .chip[data-idx="${idx}"]`) || $(`#mode-defs .chip[data-idx="${idx}"]`);
+    if(chip){ z.appendChild(chip); chip.classList.remove('correct','wrong'); }
+  });
+});
+$('#defs-new').addEventListener('click',newDefs);
+$('#defs-check').addEventListener('click',()=>{
+  let placed=0, right=0, total=defsCurrent.length;
+  $$('#mode-defs .dropzone').forEach(z=>{
+    const zoneKey = z.dataset.zone;
+    z.querySelectorAll('.chip').forEach(chip=>{
+      placed++;
+      const ok = chip.dataset.zone===zoneKey;
+      chip.classList.toggle('correct', ok);
+      chip.classList.toggle('wrong', !ok);
+      if(ok) right++;
+    });
+  });
+  const exp = $('#defs-explain');
+  exp.classList.add('show');
+  exp.innerHTML = `<b>${right} of ${total} correctly placed.</b> ${placed<total?'(You left some in the bank — those weren\'t counted either way.)':''}<div class="row" style="margin-top:8px">Green chips are correct. Red chips need to move.</div>`;
+  markResult(right===total && placed===total);
+});
+
+/* =============================
+   MODE 2 — SCENARIOS
+   ============================= */
+const SCEN = [
+  {t:'A rapid COVID test returns positive for a patient who does not actually have COVID.', z:'t1', why:'Test SAID YES (positive), reality WAS NO (patient healthy). Test cried wolf → Type I / false positive.'},
+  {t:'A mammogram returns "normal" for a patient who actually has an early-stage tumor.', z:'t2', why:'Test SAID NO (all clear), reality WAS YES (tumor present). Test missed a real threat → Type II / false negative.'},
+  {t:'A drug trial concludes the medication has no significant effect. Five years later, the drug is shown to clearly speed recovery.', z:'t2', why:'Test SAID NO (no effect), reality WAS YES (real effect). Classic Type II — the study missed a real effect, likely due to underpowered sample or high variability.'},
+  {t:'An A/B test on a landing page reports a "significant" 4% lift. When rolled out to production, the lift disappears — the earlier result was random noise.', z:'t1', why:'Test SAID YES (significant lift), reality WAS NO (no real lift). Type I — random noise produced a false-positive result, common with many comparisons or fluke samples.'},
+  {t:'A hospital screening test correctly identifies a healthy patient as not having the disease.', z:'ok', why:'Test SAID NO, reality WAS NO. No error — a correct decision (true negative).'},
+  {t:'A drug trial correctly concludes the new medication significantly outperforms the placebo, and the effect replicates in future studies.', z:'ok', why:'Test SAID YES, reality WAS YES. No error — a correct decision (true positive).'},
+  {t:'An intrusion detection system fires an alert on a legitimate software update being downloaded across the network.', z:'t1', why:'IDS SAID YES (attack), reality WAS NO (benign). Type I / false positive → analyst time wasted, and repeated FPs cause alert fatigue.'},
+  {t:'An intrusion detection system sees the packets of a live data-exfiltration attack but the signature rule never fires, and the breach goes undetected.', z:'t2', why:'IDS SAID NO (no attack), reality WAS YES (real intrusion). Type II / false negative — the most dangerous error in security: undetected compromise.'},
+  {t:'A spam filter routes a legitimate business proposal into the spam folder.', z:'t1', why:'Filter SAID YES (spam), reality WAS NO (legit email). Type I / false positive.'},
+  {t:'A spam filter allows a phishing email into the inbox as if it were normal mail.', z:'t2', why:'Filter SAID NO (clean), reality WAS YES (phish). Type II / false negative.'},
+  {t:'Antivirus software quarantines a legitimate driver update, mistaking it for malware.', z:'t1', why:'AV SAID YES (malware), reality WAS NO (legit driver). Type I / false positive.'},
+  {t:'Antivirus software fails to detect a fileless malware payload running in memory.', z:'t2', why:'AV SAID NO (clean), reality WAS YES (malware present). Type II / false negative.'},
+  {t:'A jury convicts a defendant who is truly innocent of the charged crime.', z:'t1', why:'Jury SAID YES (guilty), reality WAS NO (innocent). Type I — convicting the innocent. H₀ = "innocent" was true, and the verdict rejected it.'},
+  {t:'A jury acquits a defendant who is actually guilty of the charged crime.', z:'t2', why:'Jury SAID NO (not guilty), reality WAS YES (guilty). Type II — acquitting the guilty. H₀ = "innocent" was false, and the verdict accepted it.'},
+  {t:'A jury correctly acquits an innocent defendant based on the evidence.', z:'ok', why:'Jury SAID NO, reality WAS NO. No error — correct acquittal.'},
+  {t:'A fraud detection model flags a legitimate large purchase as suspicious and freezes the customer\'s card.', z:'t1', why:'Model SAID YES (fraud), reality WAS NO (legit purchase). Type I / false positive — inconveniences the customer.'},
+  {t:'A fraud detection model lets an actual fraudulent transaction go through without any alert.', z:'t2', why:'Model SAID NO (clean), reality WAS YES (fraud). Type II / false negative — the costly one for the bank.'},
+  {t:'A researcher runs a study with n = 6 and gets p = 0.18. They conclude "no effect." A later, well-powered study shows the effect is real and moderate.', z:'t2', why:'Study SAID NO (not significant), reality WAS YES (real effect). Type II — the small sample lacked the power to detect the real effect.'},
+  {t:'A researcher runs 20 different hypothesis tests without correction. One returns p = 0.03. They report the finding as significant, but nothing is really going on.', z:'t1', why:'Test SAID YES (significant), reality WAS NO (nothing real). Type I — multiple comparisons inflate the false-positive rate; one "significant" result is expected by chance out of 20 tests at α = 0.05.'},
+  {t:'A PhD student\'s dissertation study correctly finds that the new teaching method boosts scores, and the finding replicates across multiple follow-up trials.', z:'ok', why:'Test SAID YES, reality WAS YES. No error — correct rejection of a false null.'},
+];
+let scenCurrent=null;
+function newScen(){
+  scenCurrent = rand(SCEN);
+  $('#scen-text').innerHTML = `<div class="lead">Scenario</div>${scenCurrent.t}`;
+  $$('#mode-scen .dropzone .chip').forEach(c=>c.remove());
+  const bank = $('#scen-bank');
+  bank.innerHTML='';
+  const chip = document.createElement('div');
+  chip.className='chip'; chip.draggable=true; chip.textContent='This scenario →';
+  chip.dataset.zone = scenCurrent.z;
+  chip.addEventListener('dragstart',e=>{
+    e.dataTransfer.setData('text/mode','scen');
+    chip.style.opacity='.5';
+  });
+  chip.addEventListener('dragend',()=>chip.style.opacity='1');
+  chip.addEventListener('click',()=>{
+    if(chip.parentElement && chip.parentElement.classList.contains('dropzone')){
+      bank.appendChild(chip);
+      chip.classList.remove('correct','wrong');
+    }
+  });
+  bank.appendChild(chip);
+  $('#scen-explain').classList.remove('show');
+}
+$$('#mode-scen .dropzone').forEach(z=>{
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over');});
+  z.addEventListener('dragleave',()=>z.classList.remove('over'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('over');
+    if(e.dataTransfer.getData('text/mode')!=='scen') return;
+    const chip = $('#scen-bank .chip') || $('#mode-scen .chip');
+    if(chip){ z.appendChild(chip); chip.classList.remove('correct','wrong'); }
+  });
+});
+$('#scen-new').addEventListener('click',newScen);
+$('#scen-check').addEventListener('click',()=>{
+  const placed = $$('#mode-scen .dropzone .chip');
+  if(!placed.length){ alert('Drag the scenario onto a zone first.'); return; }
+  const chip = placed[0];
+  const zone = chip.parentElement.dataset.zone;
+  const ok = zone===scenCurrent.z;
+  chip.classList.toggle('correct',ok);
+  chip.classList.toggle('wrong',!ok);
+  const exp = $('#scen-explain');
+  exp.classList.add('show');
+  exp.innerHTML = `<b>${ok?'✅ Correct':'❌ Not quite'}.</b><div class="row" style="margin-top:6px">${scenCurrent.why}</div>`;
+  markResult(ok);
+});
+
+/* =============================
+   MODE 3 — SAID / WAS DECODER
+   ============================= */
+const SW = [
+  {t:'A newly deployed EDR sensor triggers a "possible malware" alert on a signed system utility that ships with Windows. Security operations investigates and confirms nothing is wrong.', said:'yes', was:'no', err:'t1',
+   why:'EDR SAID YES (malware alert). Reality WAS NO (legit utility). SAID YES + WAS NO → <span class="said">Type I</span> (false positive).'},
+  {t:'A screening blood test comes back negative for a rare disease, but the patient later presents with clear symptoms and is diagnosed with that same disease.', said:'no', was:'yes', err:'t2',
+   why:'Test SAID NO (negative). Reality WAS YES (patient has the disease). SAID NO + WAS YES → <span class="was">Type II</span> (false negative).'},
+  {t:'An analyst runs a t-test comparing average purchase amounts between two customer segments. p = 0.72. The two segments actually spend the same amount on average.', said:'no', was:'no', err:'ok',
+   why:'Test SAID NO (p ≥ 0.05, not significant). Reality WAS NO (no real difference). SAID = WAS → Correct decision, no error.'},
+  {t:'A biotech reports p = 0.02 for a promising cancer drug. Ten years and many follow-up studies confirm it genuinely works.', said:'yes', was:'yes', err:'ok',
+   why:'Test SAID YES (significant). Reality WAS YES (real effect). SAID = WAS → Correct decision, no error.'},
+  {t:'A polygraph test indicates a truthful witness is lying about a key detail. Later evidence proves the witness was telling the truth.', said:'yes', was:'no', err:'t1',
+   why:'Polygraph SAID YES (lying). Reality WAS NO (truthful). SAID YES + WAS NO → <span class="said">Type I</span>.'},
+  {t:'A metal detector at an airport does not beep as a passenger walks through, but the passenger is actually carrying a small concealed knife.', said:'no', was:'yes', err:'t2',
+   why:'Detector SAID NO (no threat). Reality WAS YES (real threat). SAID NO + WAS YES → <span class="was">Type II</span>.'},
+  {t:'An A/B test on a checkout redesign produces p = 0.31. The redesign genuinely has no effect on conversion rate.', said:'no', was:'no', err:'ok',
+   why:'Test SAID NO (not significant). Reality WAS NO (no real effect). Correct decision.'},
+  {t:'A phishing simulation email successfully bypasses your email gateway and lands in an executive\'s inbox looking like a normal message.', said:'no', was:'yes', err:'t2',
+   why:'Gateway SAID NO (clean). Reality WAS YES (phish). SAID NO + WAS YES → <span class="was">Type II</span>.'},
+  {t:'A DLP tool blocks an outbound email that looked like a data-exfiltration attempt. On review, it was just an accountant sending a legitimate quarterly report to an auditor.', said:'yes', was:'no', err:'t1',
+   why:'DLP SAID YES (exfiltration). Reality WAS NO (legit report). SAID YES + WAS NO → <span class="said">Type I</span>.'},
+  {t:'A pilot study with n = 8 fails to detect a difference between two teaching methods (p = 0.22). A follow-up study with n = 400 clearly shows the second method is more effective.', said:'no', was:'yes', err:'t2',
+   why:'Pilot SAID NO (not significant). Reality WAS YES (real effect, revealed by the larger study). Classic <span class="was">Type II</span> — underpowered study.'},
+];
+let swCurrent=null, swPick={said:null,was:null,err:null};
+function newSW(){
+  swCurrent = rand(SW);
+  swPick = {said:null,was:null,err:null};
+  $('#sw-text').innerHTML = `<div class="lead">Scenario</div>${swCurrent.t}`;
+  $$('#mode-sw .opt').forEach(o=>o.classList.remove('sel','correct','wrong'));
+  $('#sw-explain').classList.remove('show');
+}
+$$('#mode-sw [data-group]').forEach(group=>{
+  const g = group.dataset.group;
+  group.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      group.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+      opt.classList.add('sel');
+      swPick[g]=opt.dataset.val;
+    });
+  });
+});
+$('#sw-new').addEventListener('click',newSW);
+$('#sw-check').addEventListener('click',()=>{
+  if(!swPick.said||!swPick.was||!swPick.err){ alert('Pick SAID, WAS, and error type first.'); return; }
+  const rightSaid = swPick.said===swCurrent.said;
+  const rightWas  = swPick.was ===swCurrent.was;
+  const rightErr  = swPick.err ===swCurrent.err;
+  $$('#mode-sw [data-group="said"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===swCurrent.said) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  $$('#mode-sw [data-group="was"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===swCurrent.was) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  $$('#mode-sw [data-group="err"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===swCurrent.err) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  const allRight = rightSaid && rightWas && rightErr;
+  const exp = $('#sw-explain');
+  exp.classList.add('show');
+  exp.innerHTML = `<b>${allRight?'✅ All three correct.':'❌ Review below.'}</b><div class="row" style="margin-top:6px">${swCurrent.why}</div><div class="row"><b>SAID:</b> ${swCurrent.said.toUpperCase()} &nbsp; <b>WAS:</b> ${swCurrent.was.toUpperCase()} &nbsp; <b>Error:</b> ${swCurrent.err==='t1'?'Type I':swCurrent.err==='t2'?'Type II':'Correct'}</div>`;
+  markResult(allRight);
+});
+
+/* =============================
+   MODE 4 — CUE WORDS (MCQ)
+   ============================= */
+const CUE = [
+  {q:'"α (alpha)"', opts:['Type I error rate','Type II error rate','Confidence interval width','Statistical power'], a:0,
+   why:'α is the significance threshold — the probability of rejecting a true null. It IS the Type I error rate.'},
+  {q:'"β (beta)"', opts:['Type I error rate','Type II error rate','p-value','Confidence interval'], a:1,
+   why:'β is the probability of accepting a false null — the Type II error rate. Statistical power = 1 − β.'},
+  {q:'Increasing sample size (n) primarily reduces the risk of which error?', opts:['Type I','Type II','Both equally','Neither'], a:1,
+   why:'More data = more power to detect real effects, which reduces Type II. It does NOT change α, so it doesn\'t reduce Type I on its own.'},
+  {q:'Lowering α from 0.05 to 0.01 changes which error rate?', opts:['Reduces Type I, raises Type II','Reduces Type II, raises Type I','Reduces both','Reduces neither'], a:0,
+   why:'Stricter α makes it harder to reject the null → fewer false positives (Type I ↓), but easier to miss real effects (Type II ↑).'},
+  {q:'"Alert fatigue" in a SOC most commonly stems from too many which error?', opts:['Type I (false positives)','Type II (false negatives)','Sampling errors','Confidence errors'], a:0,
+   why:'Too many false-positive alerts train analysts to ignore alarms — Type I overload. Type II is dangerous but silent, not fatiguing.'},
+  {q:'"Undetected breach" is an example of which error?', opts:['Type I','Type II','Sampling error','Confidence error'], a:1,
+   why:'The security system SAID NO (no attack) when reality WAS YES (attack occurred). Missed real threat = Type II.'},
+  {q:'Statistical power is defined as:', opts:['1 − α','1 − β','α + β','p-value'], a:1,
+   why:'Power = 1 − β = probability of correctly rejecting a false null. Higher power = lower Type II risk.'},
+  {q:'"Convicting an innocent defendant" maps to which error?', opts:['Type I','Type II','Neither','Both'], a:0,
+   why:'H₀ = "innocent" was TRUE. The verdict rejected it (SAID GUILTY). Rejected true null → Type I.'},
+  {q:'"Acquitting a guilty defendant" maps to which error?', opts:['Type I','Type II','Neither','Both'], a:1,
+   why:'H₀ = "innocent" was FALSE. The verdict accepted it (SAID NOT GUILTY). Accepted false null → Type II.'},
+  {q:'Running 20 independent tests at α = 0.05 without correction. Approximately how many false positives would you expect by chance if all nulls are true?', opts:['0','1','5','10'], a:1,
+   why:'20 × 0.05 = 1 expected Type I error per set of 20 tests. This is the multiple-comparisons problem — a big Type I inflator.'},
+  {q:'A test with p = 0.03, but the effect is not real. What error type occurred?', opts:['Type I','Type II','Sampling error','No error'], a:0,
+   why:'Test SAID YES (significant), reality WAS NO (no real effect). Rejected a true null → Type I.'},
+  {q:'A test with p = 0.24, but a real effect actually exists in the population. What error type occurred?', opts:['Type I','Type II','No error','Sampling error'], a:1,
+   why:'Test SAID NO (not significant), reality WAS YES (real effect exists). Accepted a false null → Type II.'},
+  {q:'"False positive" describes what the ___ said.', opts:['Test / study','Reality','Population','Researcher'], a:0,
+   why:'"False" always modifies the test\'s claim. False positive = the TEST said positive but reality was not.'},
+  {q:'Which error can be reduced by increasing statistical power?', opts:['Type I only','Type II only','Both','Neither'], a:1,
+   why:'Power = 1 − β. Higher power directly means lower β = lower Type II. Type I is set by α, not power.'},
+  {q:'A spam filter marks a real business email as spam. Which error?', opts:['Type I','Type II','Sampling error','No error'], a:0,
+   why:'Filter SAID YES (spam), reality WAS NO (legit). Type I / false positive.'},
+];
+let cueCurrent=null, cuePick=null;
+function newCue(){
+  cueCurrent = rand(CUE);
+  cuePick = null;
+  $('#cue-text').innerHTML = `<div class="lead">Cue</div>${cueCurrent.q}`;
+  const box = $('#cue-opts');
+  box.innerHTML='';
+  cueCurrent.opts.forEach((opt,i)=>{
+    const d = document.createElement('div');
+    d.className='opt'; d.textContent=opt; d.dataset.idx=i;
+    d.addEventListener('click',()=>{
+      $$('#cue-opts .opt').forEach(x=>x.classList.remove('sel'));
+      d.classList.add('sel');
+      cuePick=i;
+    });
+    box.appendChild(d);
+  });
+  $('#cue-explain').classList.remove('show');
+}
+$('#cue-new').addEventListener('click',newCue);
+$('#cue-check').addEventListener('click',()=>{
+  if(cuePick===null){ alert('Pick an option first.'); return; }
+  const ok = cuePick===cueCurrent.a;
+  $$('#cue-opts .opt').forEach(o=>{
+    const i = parseInt(o.dataset.idx);
+    o.classList.remove('correct','wrong');
+    if(i===cueCurrent.a) o.classList.add('correct');
+    else if(i===cuePick) o.classList.add('wrong');
+  });
+  const exp = $('#cue-explain');
+  exp.classList.add('show');
+  exp.innerHTML = `<b>${ok?'✅ Correct':'❌ Not quite'}.</b><div class="row" style="margin-top:6px">${cueCurrent.why}</div>`;
+  markResult(ok);
+});
+
+/* =============================
+   MODE 5 — VOCAB TRANSLATOR
+   ============================= */
+const VOC = [
+  {t:'"The researcher rejected a null hypothesis that was actually true."', said:'yes', was:'no', err:'t1',
+   why:'"Rejected the null" = SAID YES. "Null was true" = WAS NO (no real effect). SAID YES + WAS NO → Type I.'},
+  {t:'"The researcher accepted a null hypothesis that was actually false."', said:'no', was:'yes', err:'t2',
+   why:'"Accepted the null" = SAID NO. "Null was false" = WAS YES (real effect exists). SAID NO + WAS YES → Type II.'},
+  {t:'"The team failed to reject the null hypothesis, and no true effect existed in the population."', said:'no', was:'no', err:'ok',
+   why:'"Failed to reject the null" = SAID NO. "No true effect" = WAS NO. SAID = WAS → Correct decision, no error.'},
+  {t:'"They rejected the null hypothesis, and a genuine effect was later confirmed in replication studies."', said:'yes', was:'yes', err:'ok',
+   why:'"Rejected the null" = SAID YES. "Genuine effect confirmed" = WAS YES. SAID = WAS → Correct decision.'},
+  {t:'"They obtained p = 0.02 and claimed a significant effect. Follow-up replications with much larger n consistently show no effect."', said:'yes', was:'no', err:'t1',
+   why:'p &lt; 0.05 + "claimed significant" = SAID YES. Replications show "no effect" = WAS NO. Type I / false positive.'},
+  {t:'"They obtained p = 0.18 and concluded no effect. Their sample was very small; a well-powered study later shows a substantial real effect."', said:'no', was:'yes', err:'t2',
+   why:'"Concluded no effect" = SAID NO. "Substantial real effect" = WAS YES. Type II — underpowered small sample missed a real effect.'},
+  {t:'"The null hypothesis was rejected. Subsequent studies confirm the drug is entirely ineffective."', said:'yes', was:'no', err:'t1',
+   why:'"Rejected the null" = SAID YES (claimed effect). "Drug is entirely ineffective" = WAS NO. Type I.'},
+  {t:'"The test result was not significant (p = 0.42), and in reality the two treatments produce identical outcomes."', said:'no', was:'no', err:'ok',
+   why:'"Not significant" = SAID NO. "Identical outcomes" = WAS NO. Correct decision.'},
+];
+let vocCurrent=null, vocPick={said:null,was:null,err:null};
+function newVoc(){
+  vocCurrent = rand(VOC);
+  vocPick = {said:null,was:null,err:null};
+  $('#voc-text').innerHTML = `<div class="lead">Formal phrase</div>${vocCurrent.t}`;
+  $$('#mode-voc .opt').forEach(o=>o.classList.remove('sel','correct','wrong'));
+  $('#voc-explain').classList.remove('show');
+}
+$$('#mode-voc [data-group]').forEach(group=>{
+  const g = group.dataset.group;
+  group.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      group.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+      opt.classList.add('sel');
+      vocPick[g]=opt.dataset.val;
+    });
+  });
+});
+$('#voc-new').addEventListener('click',newVoc);
+$('#voc-check').addEventListener('click',()=>{
+  if(!vocPick.said||!vocPick.was||!vocPick.err){ alert('Pick SAID, WAS, and error type first.'); return; }
+  $$('#mode-voc [data-group="said"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===vocCurrent.said) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  $$('#mode-voc [data-group="was"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===vocCurrent.was) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  $$('#mode-voc [data-group="err"] .opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    if(o.dataset.val===vocCurrent.err) o.classList.add('correct');
+    else if(o.classList.contains('sel')) o.classList.add('wrong');
+  });
+  const ok = vocPick.said===vocCurrent.said && vocPick.was===vocCurrent.was && vocPick.err===vocCurrent.err;
+  const exp = $('#voc-explain');
+  exp.classList.add('show');
+  exp.innerHTML = `<b>${ok?'✅ All three correct.':'❌ Review below.'}</b><div class="row" style="margin-top:6px">${vocCurrent.why}</div>`;
+  markResult(ok);
+});
+
+/* =============================
+   MODE 6 — MIXED DRILL
+   ============================= */
+function newMix(){
+  const roll = Math.floor(Math.random()*5); // pick modes 1-5
+  const modes = ['defs','scen','sw','cue','voc'];
+  const target = modes[roll];
+  switchMode(target);
+  if(target==='defs') newDefs();
+  else if(target==='scen') newScen();
+  else if(target==='sw') newSW();
+  else if(target==='cue') newCue();
+  else if(target==='voc') newVoc();
+}
+$('#mix-container').innerHTML = '<p class="hint" style="margin-top:14px">Click below (or press <kbd>N</kbd>) to jump to a random mode with a fresh question.</p><div class="controls"><button class="primary" id="mix-new">New Question <kbd>N</kbd></button></div>';
+$('#mix-new').addEventListener('click',newMix);
+
+/* =============================
+   KEYBOARD SHORTCUTS
+   ============================= */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const activeMode = $('.mode.active').id.replace('mode-','');
+  if(e.key==='n'||e.key==='N'){
+    if(activeMode==='defs') newDefs();
+    else if(activeMode==='scen') newScen();
+    else if(activeMode==='sw') newSW();
+    else if(activeMode==='cue') newCue();
+    else if(activeMode==='voc') newVoc();
+    else if(activeMode==='mix') newMix();
+  } else if(e.key==='Enter'){
+    if(activeMode==='defs') $('#defs-check').click();
+    else if(activeMode==='scen') $('#scen-check').click();
+    else if(activeMode==='sw') $('#sw-check').click();
+    else if(activeMode==='cue') $('#cue-check').click();
+    else if(activeMode==='voc') $('#voc-check').click();
+  } else if(e.key==='r'||e.key==='R'){
+    state.score=0; state.total=0; updateScore();
+  } else if(['1','2','3','4','5','6'].includes(e.key)){
+    const modes = ['defs','scen','sw','cue','voc','mix'];
+    switchMode(modes[parseInt(e.key)-1]);
+  }
+});
+
+/* =============================
+   INIT
+   ============================= */
+newDefs();
+newScen();
+newSW();
+newCue();
+newVoc();
+updateScore();
+</script>
+</body>
+</html>
