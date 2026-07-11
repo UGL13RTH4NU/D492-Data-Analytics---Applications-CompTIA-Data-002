@@ -15,8 +15,8 @@ As of initial post (June 22, 2026) - Right now this repo contains a single Anki 
 
 - **`D492 Data+ 002 - Scotts Fresh Deck.apkg`** — an Anki deck covering the full D492 / Data+ course (1,500+ cards). See breakdown below.
 -  [📊 Module 12 — Statistical Test Decision Chart](https://ugl13rth4nu.github.io/D492-Data-Analytics---Applications-CompTIA-Data-002/D492_Module12_TestDecisionChart.html) — interactive reference for choosing the right statistical test (t-test family, correlation vs regression, chi-square, p-values, confidence intervals)
--  [🎯 Module 12 — Trainer - Drag and Drop](https://ugl13rth4nu.github.io/D492-Data-Analytics---Applications-CompTIA-Data-002/Module12_Trainer.html) — interactive trainer)
--  [🎯 Type I and II Errors](https://ugl13rth4nu.github.io/D492-Data-Analytics---Applications-CompTIA-Data-002/Type_I_and_Type_II_Errors_Trainer.html) — interactive trainer)
+-  [🎯 Module 12 — Trainer - Drag and Drop](https://ugl13rth4nu.github.io/D492-Data-Analytics---Applications-CompTIA-Data-002/Module12_Trainer.html) — interactive trainer
+-  [🎯 Type I and II Errors](https://ugl13rth4nu.github.io/D492-Data-Analytics---Applications-CompTIA-Data-002/Type_I_and_Type_II_Errors_Trainer.html) — interactive trainer
 
 ## About the deck
 
